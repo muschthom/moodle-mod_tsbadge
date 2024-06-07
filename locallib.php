@@ -940,3 +940,26 @@ function createBadgePngFromUrl($badgeData, $outputPath) {
 
     return true;
 }
+
+
+function create_json_badge($data, $name){
+    // Konvertiere den JSON-String in ein Array
+    $json_data = json_decode($data, true);
+
+    // Verzeichnis überprüfen und erstellen, falls nicht vorhanden
+    $dir_path = __DIR__ . "/files";
+    if (!file_exists($dir_path)) {
+        mkdir($dir_path, 0777, true);
+    }
+
+    // Speicherpfad für die JSON-Datei
+    $file_path = $dir_path . '/' . $name . '.json';
+
+    // Schreibe das JSON-Array in eine Datei
+    if (file_put_contents($file_path, json_encode($json_data, JSON_PRETTY_PRINT)) === false) {
+        throw new Exception("Fehler beim Schreiben der Datei: " . $file_path);
+    }
+
+    return $file_path; 
+}
+

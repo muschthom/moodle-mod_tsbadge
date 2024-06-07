@@ -57,12 +57,12 @@ checkConnectorHealth($host);
 
 echo $OUTPUT->heading(get_string('tsbadgedata', 'mod_tsbadge'));
 
-echo $instance->tsbadgedata; 
-echo "<br/>"; 
+echo $instance->tsbadgedata;
+echo "<br/>";
 $courseid = $cm->course;
-echo "<br/>"; 
+echo "<br/>";
 
-echo $courseid; 
+//echo $courseid;
 
 
 
@@ -76,9 +76,30 @@ $contentData = get_content_data($peerId);
 validateOutgoingRequest($host, $xapikey, $peerId, $contentData);
 
 
+//create badge from data
+
+$id = 1;
+$record = $DB->get_record('tsbadge', array('id' => $id), 'name, tsbadgedata');
+
+// Überprüfen, ob ein Datensatz gefunden wurde
+if ($record) {
+    // Werte in Variablen speichern
+    $tsbadgename = $record->name;
+    $tsbadgename = str_replace(' ', '', $tsbadgename);
+    $tsbadgedata = $record->tsbadgedata;
+    $tsbadge_filepath = create_json_badge($tsbadgedata, $tsbadgename);
+} else {
+    // Fehlerbehandlung, falls kein Datensatz gefunden wurde
+    echo 'Kein Datensatz gefunden mit ID = ' . $id;
+}
+
+
+
+
+
 $walletid = get_user_preferences('block_walletsend_wallet_id', 'error', $USER->id);
 $relationshipid = get_user_preferences('block_walletsend_relationship_id', 'error', $USER->id);
-$userId = $USER->id; 
+$userId = $USER->id;
 if ($walletid != 'error' and $relationshipid != 'error') {
     //$url = new moodle_url('/blocks/walletsend/connect.php?userid=' .  $USER->id . "&badgeid=" . $badgeId);
     //$url = new moodle_url('/block/walletsend/connect.php?badgeid=' . $badgeId);
@@ -98,7 +119,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 */
         //if (isset($relresult->result->peer)) {
 
-
+/*
         //erste Nachricht
         //echo "<br/><br/>wallet_id: " . $walletid . "<br/><br/>";
         $subject = "Willkommen";
@@ -167,7 +188,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         } else {
             echo "Fehler beim Hochladen der Badge-Datei.";
         }
-*/
+
         //3 message with pdf
         $subject = "PDF-Upload";
         $body = "Hallo. Dritte Nachricht mit PDF-Anhang.";
@@ -184,14 +205,15 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         } else {
             echo "Fehler beim Hochladen der Datei.\n";
         }
-
+*/
 
         //4 message with trainspot json
         $subject = "json-Upload";
         $body = "Hallo. Vierte Nachricht mit json-Anhang.";
         $cc = [];
         $attachments = [];
-        $pdfcontent = "files/trainspotbadgedata.json";
+        //$pdfcontent = "files/trainspotbadgedata.json";
+        $pdfcontent = $tsbadge_filepath;
         //$pdfcontent = "/files/dummybadge.png";
         $fileid = uploadjson($host, $pdfcontent, "dummybadge trainspot", $xapikey);
         //echo "fileid in connect: " . $fileid;
@@ -229,4 +251,3 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     }
 }
 echo $OUTPUT->footer();
-
