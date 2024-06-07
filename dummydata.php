@@ -34,7 +34,7 @@ $validatedItems = [
         "mustBeAccepted" => true,
         "title" => "Requested Attributes",
         "items" => [
-            /*
+
             [
                 "@type" => "ReadAttributeRequestItem",
                 "mustBeAccepted" => true,
@@ -59,7 +59,7 @@ $validatedItems = [
                     "valueType" => "EMailAddress"
                 ]
             ]
-                */
+
         ]
     ]
 ];

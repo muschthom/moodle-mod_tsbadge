@@ -55,9 +55,15 @@ $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_
 checkConnectorHealth($host);
 
 
-echo $OUTPUT->heading(get_string('tsbadgedata', 'mod_tsbadge'));
+echo $OUTPUT->heading(get_string('tsbadgedatasend', 'mod_tsbadge'));
 
-echo $instance->tsbadgedata;
+echo' 
+<details>
+    <summary>Badge Data Details</summary>
+    ' . $instance->tsbadgedata . '
+</details>
+'; 
+
 echo "<br/>";
 $courseid = $cm->course;
 echo "<br/>";
@@ -87,7 +93,7 @@ if ($record) {
     $tsbadgename = $record->name;
     $tsbadgename = str_replace(' ', '', $tsbadgename);
     $tsbadgedata = $record->tsbadgedata;
-    $tsbadge_filepath = create_json_badge($tsbadgedata, $tsbadgename);
+    //$tsbadge_filepath = create_json_badge($tsbadgedata, $tsbadgename);
 } else {
     // Fehlerbehandlung, falls kein Datensatz gefunden wurde
     echo 'Kein Datensatz gefunden mit ID = ' . $id;
@@ -213,9 +219,13 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         $cc = [];
         $attachments = [];
         //$pdfcontent = "files/trainspotbadgedata.json";
-        $pdfcontent = $tsbadge_filepath;
+        //$pdfcontent = $tsbadge_filepath;
         //$pdfcontent = "/files/dummybadge.png";
-        $fileid = uploadjson($host, $pdfcontent, "dummybadge trainspot", $xapikey);
+        $badgedatasend = json_decode($tsbadgedata, true);
+
+        
+        //$fileid = uploadjson($host, $badgedatasend, "dummybadge trainspot", $xapikey);
+        $fileid = uploadjsondata($host, $badgedatasend, "dummybadge trainspot", $xapikey);
         //echo "fileid in connect: " . $fileid;
         $attachments[] = $fileid;
 
@@ -241,6 +251,8 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
     if ($templateid != 'error') { // TODO check if template is not expired!!!
         handleRelationshipProcess($host, $xapikey, $templateid);
+        //echo "<script>location.reload();</script>";
+
     } else {
         //set user preference
         require_once "dummydata.php";
@@ -248,6 +260,8 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         $templateid = createRelationshipTemplate($host, $xapikey, $peerId, $relationshipData);
 
         set_user_preference('block_walletsend_template_id', $templateid, $userId);
+        echo "<script>location.reload();</script>";
+
     }
 }
 echo $OUTPUT->footer();

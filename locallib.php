@@ -547,21 +547,27 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
 
 function handleRelationshipProcess($host, $apiKey, $templateId)
 {
+    echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
+    eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
+    scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden."; 
     // Schritt 1: QR-Code für das RelationshipTemplate abrufen
     getQrCode($host, $apiKey, $templateId);
 
     // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
     // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
-    echo "<br/>Warte auf die Beziehungsanfrage...";
-    echo "<h1>Wenn Code gescannt ist, bitte 2 x Seite neu laden!</h1>";
+    //echo "<br/>Warte auf die Beziehungsanfrage...";
+    echo "<h1>Wenn Code gescannt ist, bitte 1 x Seite neu laden!</h1>";
 
     // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
     $relationshipData = syncAccount($host, $apiKey);
 
     // Prüfen, ob es neue Beziehungsanfragen gibt
     if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+        echo "<script>location.reload();</script>";
+
         foreach ($relationshipData['result']['relationships'] as $relationship) {
             if ($relationship['status'] === 'Pending') {
+                echo "<script>location.reload();</script>";
                 // Gehe durch alle pending Änderungen
                 foreach ($relationship['changes'] as $change) {
                     if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
@@ -579,9 +585,45 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
             }
         }
     } else {
-        echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
+        //echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
     }
 }
+
+function getQrCodeAndSync($host, $apiKey, $templateId) {
+    // Generate and display QR code
+    getQrCode($host, $apiKey, $templateId);
+  
+    // Display status indicator
+    echo "<br/>Waiting for relationship request...";
+  
+    // Asynchronous account synchronization using XMLHttpRequest
+    $xhr = new XMLHttpRequest();
+    $xhr->open('GET', syncAccountUrl($host, $apiKey));
+    $xhr->onload = function() {
+      if ($xhr->status === 200) {
+        $relationshipData = JSON.parse($xhr->responseText);
+  
+        // Check for new relationship requests and accept
+        if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+          foreach ($relationshipData['result']['relationships'] as $relationship) {
+            if ($relationship['status'] === 'Pending') {
+              foreach ($relationship['changes'] as $change) {
+                if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
+                  acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
+                  // Automatic page reload (assuming browser environment)
+                  location.reload();
+                  break;
+                }
+              }
+            }
+          }
+        }
+      } else {
+        console.error('Error synchronizing account:', $xhr->statusText);
+      }
+    };
+    xhr.send();
+  }
 
 
 
@@ -615,7 +657,7 @@ function get_content_data($id)
                     "mustBeAccepted" => true,
                     "title" => "Requested Attributes",
                     "items" => [
-                        /*
+
                         [
                             "@type" => "ReadAttributeRequestItem",
                             "mustBeAccepted" => true,
@@ -640,7 +682,7 @@ function get_content_data($id)
                                 "valueType" => "EMailAddress"
                             ]
                         ]
-                            */
+
                     ]
                 ]
             ]
@@ -744,17 +786,36 @@ function uploadjson($host, $pdfcontentPath, $certname, $xapikey)
 {
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
 
+    
     if (!file_exists($pdfcontentPath)) {
         echo "Die Datei $pdfcontentPath existiert nicht.";
         return false;
     }
 
+    
     $fileContent = file_get_contents($pdfcontentPath);
     if ($fileContent === false) {
         echo "Fehler beim Lesen der Datei $pdfcontentPath.";
         return false;
     }
     file_put_contents($filename, $fileContent);
+    $uploadresult = callapifileupload($filename, $certname, "description", $host . '/api/v2/Files/Own', $xapikey);
+    unlink($filename);
+
+    $resultobj = json_decode($uploadresult);
+    if (isset($resultobj->result->id)) {
+        return $resultobj->result->id;
+    }
+    return false;
+}
+
+function uploadjsondata($host, $data, $certname, $xapikey)
+{
+    $jsondata = json_encode($data) ?: $data;
+    $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
+
+   
+    file_put_contents($filename, $jsondata);
     $uploadresult = callapifileupload($filename, $certname, "description", $host . '/api/v2/Files/Own', $xapikey);
     unlink($filename);
 
@@ -806,7 +867,8 @@ function callapifileupload($filename, $title, $description, $url, $xapikey)
 
 
 
-function fetchBadgeDataFromDB($badgeid, $userid) {
+function fetchBadgeDataFromDB($badgeid, $userid)
+{
     global $DB;
 
     // Lade die Badge-Informationen aus `mdl_badge`
@@ -884,7 +946,8 @@ function fetchBadgeDataFromDB($badgeid, $userid) {
 
 
 
-function createBadgePngFromUrl($badgeData, $outputPath) {
+function createBadgePngFromUrl($badgeData, $outputPath)
+{
     global $CFG;
 
     // Stelle sicher, dass alle notwendigen Daten vorhanden sind
@@ -942,7 +1005,8 @@ function createBadgePngFromUrl($badgeData, $outputPath) {
 }
 
 
-function create_json_badge($data, $name){
+function create_json_badge($data, $name)
+{
     // Konvertiere den JSON-String in ein Array
     $json_data = json_decode($data, true);
 
@@ -960,6 +1024,5 @@ function create_json_badge($data, $name){
         throw new Exception("Fehler beim Schreiben der Datei: " . $file_path);
     }
 
-    return $file_path; 
+    return $file_path;
 }
-
