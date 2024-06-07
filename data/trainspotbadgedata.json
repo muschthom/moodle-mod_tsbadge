@@ -1,0 +1,28 @@
+{
+    "trainspotBadge": {
+        "learningObjectMetadata": 
+            {
+                "objectTitle": "Digital Trainer Kurs Gesamtbilanz",
+                "competencePath": "greta_v2_0/BerufspraktischesWissenUndKoennen/DidaktikUndMethodik/MethodenMedienUndLernmaterialien",
+                "competenceID": "https://www.greta-die.de/webpages/kompetenzfacetten-index/kompetenzfacette-methoden-medien-und-lernmaterialien",
+                "tree": "GRETA Kompetenzmodell 2.0",
+                "aspect": "Berufspraktisches Wissen und Können",
+                "area": "Didaktik und Methodik",
+                "facet": "Methoden, Medien und Lernmaterialien",
+                "level": 2,
+                "educational_typicalLearningTime_duration": "4h30m",
+                "issuer": {
+                    "id": "https://www.th-luebeck.de/",
+                    "name": "Technische Hochschule Lübeck"
+                }
+            },
+        "badge": {
+            "badgeType": "Anbieter-Badge",
+            "badgeName": "TrainSpot Anbieter-Badge",
+            "badgeID": "id123456789",
+            "badgeValue": 0.2,
+            "badgeUnit": "ECTS",
+            "creditStandard": "ECTS"
+        }
+    }
+}
