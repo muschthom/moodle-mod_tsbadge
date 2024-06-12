@@ -38,3 +38,5 @@ $string['apikey_desc'] = 'API Key';
 $string['connectoraddress'] = 'Connector Adresse';
 $string['connectoraddress_desc'] = 'ID des Connectors';
 $string['send_to_wallet'] = 'An Wallet senden';
+$string['send_files_to_wallet_success'] = 'Trainspot-Badge erfolgreich an Wallet gesendet. ';
+

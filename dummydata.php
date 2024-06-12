@@ -2,9 +2,9 @@
 
 //get config data from db
 global $DB, $CFG;
-$host = $DB->get_record('config', ['name' => 'block_walletsend_domain_url'])->value;
-$xapikey = $DB->get_record('config', ['name' => 'block_walletsend_api_key'])->value;
-$connectoraddress = $DB->get_record('config', ['name' => 'block_walletsend_connector_address'])->value;
+$host = $DB->get_record('config', ['name' => 'mod_tsbadge_domain_url'])->value;
+$xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
+$connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
 
 $id = createConnectorAttribute($host, $xapikey, $connectoraddress);
 
@@ -28,7 +28,8 @@ $validatedItems = [
                 "sourceAttributeId" => $id
             ]
         ]
-    ],
+    ]
+    /*,
     [
         "@type" => "RequestItemGroup",
         "mustBeAccepted" => true,
@@ -61,7 +62,9 @@ $validatedItems = [
             ]
 
         ]
+            
     ]
+        */
 ];
 
 global $relationshipData;

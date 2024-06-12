@@ -221,7 +221,7 @@ function checkConnectorHealth($host)
     if ($statusCode === 200) {
         $data = json_decode($response, true);
         if ($data['isHealthy']) {
-            echo "<br/>.\n";
+            echo "<br/>Connector is healthy.\n";
         } else {
             echo "<br/>Der Connector hat Probleme.\n";
         }
@@ -523,7 +523,7 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
     $wallet_id = $response_data['result']['peer'];
 
     global $USER;
-    set_user_preference('block_walletsend_wallet_id', $wallet_id, $USER->id);
+    set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
 
 
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -549,7 +549,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 {
     echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
     eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
-    scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden."; 
+    scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden.";
     // Schritt 1: QR-Code für das RelationshipTemplate abrufen
     getQrCode($host, $apiKey, $templateId);
 
@@ -574,7 +574,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
                         // Schritt 3: Beziehungsänderung akzeptieren
                         echo "<br/>Akzeptiere Beziehungsanfrage...";
                         global $USER;
-                        set_user_preference('block_walletsend_relationship_id', $relationship['id'], $USER->id);
+                        set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
 
 
                         acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
@@ -589,41 +589,42 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
     }
 }
 
-function getQrCodeAndSync($host, $apiKey, $templateId) {
+function getQrCodeAndSync($host, $apiKey, $templateId)
+{
     // Generate and display QR code
     getQrCode($host, $apiKey, $templateId);
-  
+
     // Display status indicator
     echo "<br/>Waiting for relationship request...";
-  
+
     // Asynchronous account synchronization using XMLHttpRequest
     $xhr = new XMLHttpRequest();
     $xhr->open('GET', syncAccountUrl($host, $apiKey));
-    $xhr->onload = function() {
-      if ($xhr->status === 200) {
-        $relationshipData = JSON.parse($xhr->responseText);
-  
-        // Check for new relationship requests and accept
-        if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
-          foreach ($relationshipData['result']['relationships'] as $relationship) {
-            if ($relationship['status'] === 'Pending') {
-              foreach ($relationship['changes'] as $change) {
-                if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
-                  acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
-                  // Automatic page reload (assuming browser environment)
-                  location.reload();
-                  break;
+    $xhr->onload = function () {
+        if ($xhr->status === 200) {
+            $relationshipData = JSON.parse($xhr->responseText);
+
+            // Check for new relationship requests and accept
+            if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+                foreach ($relationshipData['result']['relationships'] as $relationship) {
+                    if ($relationship['status'] === 'Pending') {
+                        foreach ($relationship['changes'] as $change) {
+                            if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
+                                acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
+                                // Automatic page reload (assuming browser environment)
+                                location . reload();
+                                break;
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
+        } else {
+            console.error('Error synchronizing account:', $xhr->statusText);
         }
-      } else {
-        console.error('Error synchronizing account:', $xhr->statusText);
-      }
     };
     xhr.send();
-  }
+}
 
 
 
@@ -657,7 +658,7 @@ function get_content_data($id)
                     "mustBeAccepted" => true,
                     "title" => "Requested Attributes",
                     "items" => [
-
+                        /*
                         [
                             "@type" => "ReadAttributeRequestItem",
                             "mustBeAccepted" => true,
@@ -682,7 +683,7 @@ function get_content_data($id)
                                 "valueType" => "EMailAddress"
                             ]
                         ]
-
+*/                  
                     ]
                 ]
             ]
@@ -786,13 +787,13 @@ function uploadjson($host, $pdfcontentPath, $certname, $xapikey)
 {
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
 
-    
+
     if (!file_exists($pdfcontentPath)) {
         echo "Die Datei $pdfcontentPath existiert nicht.";
         return false;
     }
 
-    
+
     $fileContent = file_get_contents($pdfcontentPath);
     if ($fileContent === false) {
         echo "Fehler beim Lesen der Datei $pdfcontentPath.";
@@ -814,7 +815,7 @@ function uploadjsondata($host, $data, $certname, $xapikey)
     $jsondata = json_encode($data) ?: $data;
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
 
-   
+
     file_put_contents($filename, $jsondata);
     $uploadresult = callapifileupload($filename, $certname, "description", $host . '/api/v2/Files/Own', $xapikey);
     unlink($filename);

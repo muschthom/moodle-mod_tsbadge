@@ -67,7 +67,7 @@ class mod_tsbadge_mod_form extends moodleform_mod {
 
     function data_preprocessing(&$default_values) {
         // Set default values for the form fields.
-        $default_values['name'] = 'Trainspot Badge Name';
+        $default_values['name'] = 'Trainspot Badge';
 
     }
 
