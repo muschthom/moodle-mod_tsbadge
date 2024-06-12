@@ -104,7 +104,7 @@ function tsbadge_cm_info_dynamic(cm_info $cm) {
             require_once($CFG->dirroot . '/mod/tsbadge/locallib.php');
             //TODO: Badge vergeben
             //$metacertificate = \mod_ilddigitalcert\bcert\certificate::new($cm, $USER);
-            issue_tsbadge($metacertificate, $cm);
+            //issue_tsbadge($metacertificate, $cm);
         }
     }
 }
