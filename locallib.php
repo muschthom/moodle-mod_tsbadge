@@ -25,125 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-/**
- * Issues a new digital certificate.
- *
- * @param certificate $certificate
- * @param stdClass $cm Course module.
- * @return string Returns the metadata of the issued certificate as a json string.
- */
-/*
-function issue_tsbadge($certificate, $cm) {
-    global $DB, $CFG, $SITE;
-
-    $recipient = $DB->get_record('user', array('id' => $certificate->get_subjectid()));
-    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cm->id));
-    $context = context_module::instance($cm->id);
-
-    // Get enrolmentid.
-    $sql = 'SELECT ue.id FROM {user_enrolments} ue, {enrol} e
-             WHERE ue.enrolid = e.id
-               and e.courseid = :courseid
-               and ue.userid = :userid ';
-    $params = array('courseid' => $courseid, 'userid' => $recipient->id);
-
-    $enrolmentid = 0;
-    if ($enrolment = $DB->get_records_sql($sql, $params)) {
-        if (count($enrolment) > 1) {
-            throw new moodle_exception(
-                'to_many_enrolments',
-                'mod_ilddigitalcert',
-                new moodle_url('/mod/ilddigitalcert/course/view.php', array('id' => $courseid))
-            );
-        } else {
-            foreach ($enrolment as $em) {
-                $enrolmentid = $em->id;
-            }
-        }
-    } else {
-        throw new moodle_exception(
-            'not_enrolled',
-            'mod_ilddigitalcert',
-            new moodle_url('/mod/ilddigitalcert/course/view.php', array('id' => $courseid))
-        );
-    }
-    if ($issued = $DB->get_record(
-        'ilddigitalcert_issued',
-        array('userid' => $recipient->id, 'cmid' => $cm->id, 'enrolmentid' => $enrolmentid)
-    )) {
-        return $issued->metadata;
-    }
-
-    // Set new db record data.
-    $issued = new stdClass();
-    $issued->userid = $recipient->id;
-    $issued->cmid = $cm->id;
-    $issued->courseid = $courseid;
-    $issued->name = $certificate->get_title();
-    $issued->inblockchain = false;
-    $issued->timecreated = time();
-    $issued->timemodified = time();
-    $issued->metadata = '';
-    $issued->enrolmentid = $enrolmentid;
-
-    $issuedid = $DB->insert_record('ilddigitalcert_issued', $issued);
-    $issued->id = $issuedid;
-
-    // Update the metadata certificate.
-    $certificate->issue($cm, $issued->id, $issued->timemodified);
-
-    $issued->metadata = $certificate->get_ob();
-    $issued->edci = $certificate->get_edci();
-
-    // Update record.
-    $DB->update_record('ilddigitalcert_issued', $issued);
-
-    // Log certificate_issued event.
-    $event = \mod_ilddigitalcert\event\certificate_issued::create(
-        array('context' => $context, 'objectid' => $issued->id, 'relateduserid' => $issued->userid)
-    );
-    $event->trigger();
-
-    // Get ilddigitalcert settings.
-    $certsettingssql = "SELECT cert.automation, cert.auto_certifier, cert.auto_pk
-                          FROM {course_modules} cm
-                          JOIN {ilddigitalcert} cert
-                            ON cm.instance = cert.id
-                         WHERE cm.id = :cmid;";
-    $certsettings = $DB->get_record_sql($certsettingssql, array('cmid' => $cm->id), IGNORE_MISSING);
-
-    // If automation is enabled, issued certificate will be signed and written
-    // to the blockchain using the pk of the selected certifier.
-    if ($certsettings->automation && $certsettings->auto_certifier && $certsettings->auto_pk) {
-        if ($certifier = $DB->get_record('user', array('id' => $certsettings->auto_certifier), '*', IGNORE_MISSING)) {
-            if ($pk = \mod_ilddigitalcert\crypto_manager::decrypt($certsettings->auto_pk)) {
-                if (to_blockchain($issued, $certifier, $pk)) {
-                    return $issued->metadata;
-                }
-            }
-        }
-    }
-
-    // Email to user, if it has to be signed and written to the blockchain still.
-    $fromuser = core_user::get_support_user();
-    $fullname = explode(' ', get_string('modulenameplural', 'mod_ilddigitalcert'));
-    $fromuser->firstname = $fullname[0];
-    $fromuser->lastname = $fullname[1];
-    $subject = get_string('subject_new_certificate', 'mod_ilddigitalcert');
-    $a = new stdClass();
-    $a->fullname = $recipient->firstname . ' ' . $recipient->lastname;
-    $a->url = $CFG->wwwroot . '/mod/ilddigitalcert/view.php?id=' . $cm->id;
-    $a->from = $SITE->fullname;
-    $messagehtml = get_string('message_new_certificate_html', 'mod_ilddigitalcert', $a);
-    $message = html_to_text($messagehtml);
-    email_to_user($recipient, $fromuser, $subject, $message, $messagehtml);
-
-    return $issued->metadata;
-}
-
-*/
-
-
 function get_user_badges_data()
 {
     global $DB, $USER;
@@ -263,10 +144,6 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
     }
 
     curl_close($ch);
-
-    // Ausgabe des Statuscodes und der Antwort
-    //echo "<br/>HTTP-Statuscode: $status\n";
-    //echo "<br/>Antwort:\n$response\n";
 
     // JSON-String in ein PHP-Objekt umwandeln
     $responseObj = json_decode($response);
@@ -602,7 +479,7 @@ function getQrCodeAndSync($host, $apiKey, $templateId)
     $xhr->open('GET', syncAccountUrl($host, $apiKey));
     $xhr->onload = function () {
         if ($xhr->status === 200) {
-            $relationshipData = JSON.parse($xhr->responseText);
+            $relationshipData = JSON . parse($xhr->responseText);
 
             // Check for new relationship requests and accept
             if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
@@ -620,10 +497,10 @@ function getQrCodeAndSync($host, $apiKey, $templateId)
                 }
             }
         } else {
-            console.error('Error synchronizing account:', $xhr->statusText);
+            console . error('Error synchronizing account:', $xhr->statusText);
         }
     };
-    xhr.send();
+    xhr . send();
 }
 
 
@@ -683,8 +560,7 @@ function get_content_data($id)
                                 "valueType" => "EMailAddress"
                             ]
                         ]
-*/                  
-                    ]
+*/]
                 ]
             ]
         ]
@@ -730,6 +606,156 @@ function sendMessage($host, $apiKey, $recipientId, $subject, $body, $cc = [], $a
         echo "Fehler beim Senden der Nachricht: HTTP-Statuscode $statusCode\n";
         echo "Antwort: $response\n";
     }
+}
+
+
+function addRelationshipAttribute($host, $apiKey, $recipientId, $subject, $body, $cc = [], $attachments = [])
+{
+    $url = $host . "/api/v2/Messages";
+
+    $payload = json_encode([
+        "recipients" => [$recipientId],
+        "content" => [
+            "@type" => "Mail",
+            "to" => [$recipientId],
+            "cc" => $cc,
+            "subject" => $subject,
+            "body" => $body,
+        ],
+        "attachments" => $attachments
+    ]);
+
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "content-type: application/json",
+        "x-api-key: $apiKey"
+    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+    $response = curl_exec($ch);
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    curl_close($ch);
+
+    if ($statusCode === 200 || $statusCode === 201) {
+        //echo "Nachricht erfolgreich gesendet.\n";
+    } else {
+        echo "Fehler beim Senden der Nachricht: HTTP-Statuscode $statusCode\n";
+        echo "Antwort: $response\n";
+    }
+}
+
+
+
+function send_rl_attributes($walletid, $value, $host, $xapikey)
+{
+    $decodedValue = json_decode($value);
+
+    $data = [
+        "content" => [
+            "@type" => "Request",
+            "items" => [
+                [
+                    "@type" => "CreateAttributeRequestItem",
+                    "mustBeAccepted" => true,
+                    "attribute" => [
+                        "@type" => "RelationshipAttribute",
+                        //"owner" => "THLuebeck",
+                        "owner" => $walletid,
+                        "key" => "id123456789",
+                        "confidentiality" => "public",
+                        "value" => [
+                            "@type" => "ProprietaryJSON",
+                            "title" => "Trainspot Testbadge FA: Methoden",
+                            "value" =>
+                            $decodedValue
+
+                        ]
+
+                    ]
+                ]
+            ]
+        ],
+        "peer" => $walletid
+    ];
+
+    $message = json_encode($data);
+
+    $url = $host . "/api/v2/Requests/Outgoing";
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "content-type: application/json",
+        "x-api-key: $xapikey"
+    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
+
+    $response = curl_exec($ch);
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    curl_close($ch);
+
+    echo "Status Code: " . $statusCode . "\n";
+    //echo "Response: " . $response . "\n";
+
+    $messagedata = new stdClass();
+    $messagedata->recipients = array($walletid);
+    $messagedata->content = json_decode($response)->result->content;
+    $messagedata = json_encode($messagedata, JSON_PRETTY_PRINT);
+    //print_object($messagedata);die();
+
+    $msgresult = callAPI('POST', $host . '/api/v2/Messages', $messagedata, $xapikey);
+    //print_object($msgresult);die();
+
+    return $msgresult;
+}
+
+
+function callAPI($method, $url, $data, $xapikey, $image = false)
+{
+    $curl = curl_init();
+    switch ($method) {
+        case "POST":
+            curl_setopt($curl, CURLOPT_POST, 1);
+            if ($data) {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            }
+            break;
+        case "PUT":
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            if ($data) {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            }
+            break;
+        default:
+            if ($data) {
+                $url = sprintf("%s?%s", $url, http_build_query($data));
+            }
+    }
+    curl_setopt($curl, CURLOPT_URL, $url);
+    $headerarray = array(
+        'X-API-KEY: ' . $xapikey,
+        'Content-Type: application/json'
+    );
+    if ($image) {
+        $headerarray[] = 'Accept: image/png';
+    }
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headerarray);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    $result = curl_exec($curl);
+    if (!$result) {
+        throw new moodle_exception("Connection Failure");
+    }
+    curl_close($curl);
+    return $result;
 }
 
 function uploadbadge($host, $pdfcontentPath, $certname, $xapikey)
@@ -1026,4 +1052,61 @@ function create_json_badge($data, $name)
     }
 
     return $file_path;
+}
+
+
+
+function send_attributes($attributes, $walletid, $reason, $url, $xapikey)
+{
+    $requesttype = new stdClass();
+    //$requesttype -> {'@type'} = "Request"; 
+    $items = array();
+    $attribute = new stdClass();
+    $attribute->{'@type'} = 'CreateAttributeRequestItem';
+    //$attribute->{'@type'} = 'AuthenticationRequestItem';
+    $attribute->mustBeAccepted = true;
+    $attribute->title = get_string('subject_new_attribute', 'mod_ilddigitalcert');
+    //*
+    $attribute->attribute = new stdClass();
+    $attribute->attribute->{'@type'} = 'RelationshipAttribute';
+    $attribute->attribute->owner = get_config('mod_ilddigitalcert', 'dcconnectoraddress');
+    $attribute->attribute->validFrom = date('Y-m-d', time());
+    $attribute->attribute->validTo = date('Y-m-d', time() + 60 * 60 * 24 * 365 * 10);
+    $attribute->attribute->key = "name";
+    $attribute->attribute->value = new stdClass();
+    $attribute->attribute->value->{'@type'} = 'ProprietaryString';
+    $attribute->attribute->value->title = "Study.planning.field_of_interest";
+    $attribute->attribute->value->value = "Informatik";
+    $attribute->attribute->isTechnical = false;
+    $attribute->attribute->confidentiality = 'protected'; // "public" | "protected" | "private"
+    //*/
+    $items[] = $attribute;
+
+
+    $request = new stdClass();
+    //$request->{'@type'} = 'AttributesChangeRequest';
+    $request->content = new stdClass();
+    $request->{'@type'} = "Request";
+
+    $request->content->items = $items;
+    //$request->reason = $reason;
+    //$request->attributes = $dcattributes;
+    //$request->applyTo = $walletid;
+    $request->peer = $walletid;
+    print_object(json_encode($request, JSON_PRETTY_PRINT));
+    //$msgresult = callAPI('POST', $url.'/api/v2/Requests/Outgoing/Validate', json_encode($request), $xapikey);
+    //print_object(json_encode(json_decode($msgresult), JSON_PRETTY_PRINT));die();
+
+    $response = callAPI('POST', $url . '/api/v2/Requests/Outgoing', json_encode($request), $xapikey);
+    print_object(json_encode(json_decode($response), JSON_PRETTY_PRINT));
+    die();
+
+    $messagedata = new stdClass();
+    $messagedata->recipients = array($walletid);
+    $messagedata->content = json_decode($response)->result->content;
+    $messagedata = json_encode($messagedata, JSON_PRETTY_PRINT);
+    //print_object($messagedata);die();
+
+    $msgresult = callAPI('POST', $url . '/api/v2/Messages', $messagedata, $xapikey);
+    return $msgresult;
 }

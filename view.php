@@ -29,7 +29,7 @@ $id = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'tsbadge');
 $instance = $DB->get_record('tsbadge', ['id' => $cm->instance], '*', MUST_EXIST);
 
-
+global $USER; 
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -38,7 +38,6 @@ if (isguestuser()) {
 }
 
 $PAGE->set_url('/mod/tsbadge/view.php', array('id' => $cm->id));
-//$PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
@@ -54,51 +53,21 @@ checkConnectorHealth($host);
 
 echo $OUTPUT->heading(get_string('tsbadgedatasend', 'mod_tsbadge'));
 
-echo' 
+echo ' 
 <details>
     <summary>Badge Data Details</summary>
     ' . $instance->tsbadgedata . '
 </details>
-'; 
+';
 
 echo "<br/>";
 $courseid = $cm->course;
-echo "<br/>";
-
-//echo $courseid;
-
-
 
 $peerId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-//echo "peerid = " . $peerId . "\n"; 
 $contentData = get_content_data($peerId);
-//echo "<br/><br/>contentData var_dump: ";
-//var_dump($contentData);
-//echo "<br/><br/> contentData['content']";
-//var_dump($contentData['content']);
-//validateOutgoingRequest($host, $xapikey, $peerId, $contentData);
 
 
-//create badge from data
-
-$id = 1;
-$record = $DB->get_record('tsbadge', array('id' => $id), 'name, tsbadgedata');
-
-// Überprüfen, ob ein Datensatz gefunden wurde
-if ($record) {
-    // Werte in Variablen speichern
-    $tsbadgename = $record->name;
-    $tsbadgename = str_replace(' ', '', $tsbadgename);
-    $tsbadgedata = $record->tsbadgedata;
-    //$tsbadge_filepath = create_json_badge($tsbadgedata, $tsbadgename);
-} else {
-    // Fehlerbehandlung, falls kein Datensatz gefunden wurde
-    echo 'Kein Datensatz gefunden mit ID = ' . $id;
-}
-
-
-
-
+$tsbadgedata = $instance->tsbadgedata;
 
 $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
 $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
@@ -111,104 +80,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     $mform = new \mod_tsbadge\output\form\walletsendconfirm_form($url);
     if ($fromform = $mform->get_data()) {
         $relresult = getRelationship($host, $relationshipid, $xapikey);
-        //$relresult = json_decode($relresult);
-        //var_dump($relresult);
 
-        /*
-        if (
-            isset($relresult->result->peer) and
-            $relresult->result->peer == $walletid
-        ) {
-*/
-        //if (isset($relresult->result->peer)) {
-
-/*
-        //erste Nachricht
-        //echo "<br/><br/>wallet_id: " . $walletid . "<br/><br/>";
-        $subject = "Willkommen";
-        $body = "Hallo. erste Nachricht.";
-        $cc = []; //keine CC
-        $attachments = []; // Keine Anhänge
-        sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
-
-
-        //2. message with badge attached
-        $subject = "Badgeupload";
-        $body = "Hallo. Zweite Nachricht mit Badge-Anhang.";
-        $cc = [];
-
-
-        $attachments = [];
-        $badgecontent = "files\dummybadge.png";
-        //$badgecontent =fetchBadgeDataFromDB($badgeid, $userid); 
-        $fileid = uploadbadge($host, $badgecontent, "dummybadge", $xapikey);
-        //echo "fileid in connect: " . $fileid;
-        $attachments[] = $fileid;
-
-        if ($fileid) {
-            sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
-        } else {
-            echo "Fehler beim Hochladen der Datei.\n";
-        }
-
-        /*
-
-        $attachments = [];
-
-        // Zuerst holen wir die Badge-Daten
-        $badgecontent = fetchBadgeDataFromDB($badgeId, $userId);
-
-        // Prüfen, ob Badge-Daten erfolgreich abgerufen wurden
-        if (!$badgecontent) {
-            echo "Fehler beim Abrufen der Badge-Daten.";
-            return;
-        }
-
-        // Generiere einen einzigartigen Dateinamen basierend auf UUID
-        $newBadgeName = 'badge_' . uniqid() . '.png';
-
-        // Pfad, wo der Badge gespeichert wird
-        $outputDir = '/files/';
-        $outputPath = $outputDir . $newBadgeName;
-
-        // Sicherstellen, dass das Verzeichnis existiert
-        if (!file_exists($outputDir)) {
-            mkdir($outputDir, 0755, true);
-        }
-
-        // Erstellen des Badge-Bildes und Speichern auf dem Server
-        $createBadgeSuccess = createBadgePngFromUrl($badgecontent, $outputPath);
-        if (!$createBadgeSuccess) {
-            echo "Fehler beim Erstellen des Badge-Bildes.";
-            return;
-        }
-
-        // Hochladen der Badge-Datei und Speichern der File-ID
-        $fileid = uploadbadge($host, $outputPath, $newBadgeName, $xapikey);
-        if ($fileid) {
-            //echo "fileid in connect: " . $fileid;
-            $attachments[] = $fileid;
-        } else {
-            echo "Fehler beim Hochladen der Badge-Datei.";
-        }
-
-        //3 message with pdf
-        $subject = "PDF-Upload";
-        $body = "Hallo. Dritte Nachricht mit PDF-Anhang.";
-        $cc = [];
-        $attachments = [];
-        $pdfcontent = "files\dummycertificate.pdf";
-        //$pdfcontent = "/files/dummybadge.png";
-        $fileid = uploadpdf($host, $pdfcontent, "dummycertificate", $xapikey);
-        //echo "fileid in connect: " . $fileid;
-        $attachments[] = $fileid;
-
-        if ($fileid) {
-            sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
-        } else {
-            echo "Fehler beim Hochladen der Datei.\n";
-        }
-*/
 
         //4 message with trainspot json
         $subject = "Trainspot-Badge erhalten";
@@ -220,14 +92,21 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         //$pdfcontent = "/files/dummybadge.png";
         $badgedatasend = json_decode($tsbadgedata, true);
 
-        
+
         //$fileid = uploadjson($host, $badgedatasend, "dummybadge trainspot", $xapikey);
         $fileid = uploadjsondata($host, $badgedatasend, "testbadge-trainspot", $xapikey);
         //echo "fileid in connect: " . $fileid;
         $attachments[] = $fileid;
 
         if ($fileid) {
-            sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
+            //sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
+
+            $msgresult = send_rl_attributes($walletid, $tsbadgedata, $host, $xapikey);
+            $msgresult = json_decode($msgresult);
+            if (isset($msgresult->error)) {
+                throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
+            }
+
         } else {
             echo "Fehler beim Hochladen der Datei.\n";
         }
@@ -258,7 +137,6 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
         set_user_preference('mod_tsbadge_template_id', $templateid, $userId);
         echo "<script>location.reload();</script>";
-
     }
 }
 echo $OUTPUT->footer();
