@@ -29,7 +29,6 @@ $id = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'tsbadge');
 $instance = $DB->get_record('tsbadge', ['id' => $cm->instance], '*', MUST_EXIST);
 
-global $USER; 
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -43,7 +42,7 @@ $PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();
 
-global $DB, $CFG;
+global $DB, $CFG, $USER;
 $host = $DB->get_record('config', ['name' => 'mod_tsbadge_domain_url'])->value;
 $xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
 $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
@@ -73,6 +72,7 @@ $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
 $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
 $userId = $USER->id;
 if ($walletid != 'error' and $relationshipid != 'error') {
+    //echo "Wallet-ID vorhanden, RelationshipID vorhanden"; 
     //$url = new moodle_url('/blocks/walletsend/connect.php?userid=' .  $USER->id . "&badgeid=" . $badgeId);
     //$url = new moodle_url('/block/walletsend/connect.php?badgeid=' . $badgeId);
     $url = new moodle_url('/mod/tsbadge/view.php', array('id' => $cm->id));
@@ -101,12 +101,11 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         if ($fileid) {
             //sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
 
-            $msgresult = send_rl_attributes($walletid, $tsbadgedata, $host, $xapikey);
+            $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $host, $xapikey);
             $msgresult = json_decode($msgresult);
             if (isset($msgresult->error)) {
                 throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
             }
-
         } else {
             echo "Fehler beim Hochladen der Datei.\n";
         }
@@ -126,10 +125,12 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
     if ($templateid != 'error') { // TODO check if template is not expired!!!
+        //echo "templateid vorhanden"; 
         handleRelationshipProcess($host, $xapikey, $templateid);
         //echo "<script>location.reload();</script>";
 
     } else {
+        //echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
         require_once "dummydata.php";
         global $relationshipData;

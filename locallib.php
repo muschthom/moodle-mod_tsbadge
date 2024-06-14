@@ -370,6 +370,8 @@ function syncAccount($host, $apiKey)
 
 function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
 {
+    global $DB, $USER;
+
     $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Changes/" . $changeId . "/Accept";
     $apiUrl = $url;
 
@@ -393,13 +395,12 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
     // Führe den cURL-Request aus und speichere die Antwort
     $response = curl_exec($ch);
     //echo "<br/>Antwort acceptRelationshipChange():\n$response\n";
-    global $wallet_id;
+    //global $wallet_id;
     // Die ID extrahieren
     $response_data = json_decode($response, true);
 
     $wallet_id = $response_data['result']['peer'];
 
-    global $USER;
     set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
 
 
@@ -424,6 +425,8 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
 
 function handleRelationshipProcess($host, $apiKey, $templateId)
 {
+    global $DB, $USER;
+
     echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
     eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
     scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden.";
@@ -437,20 +440,22 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 
     // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
     $relationshipData = syncAccount($host, $apiKey);
+    //echo "relationshipdata = " . "<br/>";
+    //var_dump($relationshipData);
+    //echo "<br/>";
 
     // Prüfen, ob es neue Beziehungsanfragen gibt
-    if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+    //if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+    if (!empty($relationshipData['result']['relationships'])) {
         echo "<script>location.reload();</script>";
 
         foreach ($relationshipData['result']['relationships'] as $relationship) {
             if ($relationship['status'] === 'Pending') {
-                echo "<script>location.reload();</script>";
                 // Gehe durch alle pending Änderungen
                 foreach ($relationship['changes'] as $change) {
                     if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
                         // Schritt 3: Beziehungsänderung akzeptieren
                         echo "<br/>Akzeptiere Beziehungsanfrage...";
-                        global $USER;
                         set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
 
 
@@ -459,6 +464,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 
                     }
                 }
+                echo "<script>location.reload();</script>";
             }
         }
     } else {
@@ -466,6 +472,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
     }
 }
 
+/*
 function getQrCodeAndSync($host, $apiKey, $templateId)
 {
     // Generate and display QR code
@@ -502,7 +509,7 @@ function getQrCodeAndSync($host, $apiKey, $templateId)
     };
     xhr . send();
 }
-
+*/
 
 
 function get_content_data($id)
@@ -651,9 +658,13 @@ function addRelationshipAttribute($host, $apiKey, $recipientId, $subject, $body,
 
 
 
-function send_rl_attributes($walletid, $value, $host, $xapikey)
+function send_rl_attributes($walletid, $connectorAddress, $value, $host, $xapikey)
 {
     $decodedValue = json_decode($value);
+    //echo ("walletid = " . $walletid . "<br/>");
+    //$connectorAddress = "id1PxibPC2v2zQ9SPfaoHsrfAagFiMqKGFdP"; 
+    //$connectorAddress = "id1PxibPC2v2zQ9SPfaoHsrfAagFiMqKGiii";
+    //echo ("connectorAddress = " . $connectorAddress . "<br/>");
 
     $data = [
         "content" => [
@@ -665,12 +676,13 @@ function send_rl_attributes($walletid, $value, $host, $xapikey)
                     "attribute" => [
                         "@type" => "RelationshipAttribute",
                         //"owner" => "THLuebeck",
-                        "owner" => $walletid,
+                        //"owner" => $walletid,
+                        "owner" => $connectorAddress,
                         "key" => "id123456789",
                         "confidentiality" => "public",
                         "value" => [
                             "@type" => "ProprietaryJSON",
-                            "title" => "Trainspot Testbadge FA: Methoden",
+                            "title" => "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2",
                             "value" =>
                             $decodedValue
 
@@ -680,9 +692,10 @@ function send_rl_attributes($walletid, $value, $host, $xapikey)
                 ]
             ]
         ],
-        "peer" => $walletid
+        //"peer" => $walletid
+        "peer" => $connectorAddress
     ];
-
+    //echo $connectorAddress; 
     $message = json_encode($data);
 
     $url = $host . "/api/v2/Requests/Outgoing";
@@ -702,7 +715,7 @@ function send_rl_attributes($walletid, $value, $host, $xapikey)
 
     curl_close($ch);
 
-    echo "Status Code: " . $statusCode . "\n";
+    //echo "Status Code: " . $statusCode . "\n";
     //echo "Response: " . $response . "\n";
 
     $messagedata = new stdClass();
