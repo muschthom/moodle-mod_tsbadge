@@ -24,6 +24,8 @@
 
 require('../../config.php');
 require "locallib.php";
+global $DB, $CFG, $USER;
+
 
 $id = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'tsbadge');
@@ -42,7 +44,6 @@ $PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();
 
-global $DB, $CFG, $USER;
 $host = $DB->get_record('config', ['name' => 'mod_tsbadge_domain_url'])->value;
 $xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
 $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
@@ -62,18 +63,34 @@ echo '
 echo "<br/>";
 $courseid = $cm->course;
 
-$peerId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-$contentData = get_content_data($peerId);
+// AttributeId des Attributes "DisplayName" wird übergeben
+$attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
 
+//hole connector-attribute daten
+$contentData = get_content_data($attributeId);
 
+//hole json-daten des badges
 $tsbadgedata = $instance->tsbadgedata;
 
+//hole walletid, wenn vorhanden
 $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
+if ($walletid !== 'error') {
+    //echo "Wallet ID vorhanden.";
+} else {
+    echo "Wallet ID nicht gefunden.";
+}
+
+//hole relationship id, wenn vorhanden
 $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
-$userId = $USER->id;
+if ($relationshipid !== 'error') {
+    //echo "relationshipid vorhanden.";
+} else {
+    echo "Relationship-Id nicht gefunden.";
+}
+
+
 if ($walletid != 'error' and $relationshipid != 'error') {
     //echo "Wallet-ID vorhanden, RelationshipID vorhanden"; 
-    //$url = new moodle_url('/blocks/walletsend/connect.php?userid=' .  $USER->id . "&badgeid=" . $badgeId);
     //$url = new moodle_url('/block/walletsend/connect.php?badgeid=' . $badgeId);
     $url = new moodle_url('/mod/tsbadge/view.php', array('id' => $cm->id));
 
@@ -81,8 +98,17 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     if ($fromform = $mform->get_data()) {
         $relresult = getRelationship($host, $relationshipid, $xapikey);
 
+        //send badge data as relationship attribute
+        $badgedatasend = json_decode($tsbadgedata, true);
+        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $host, $xapikey);
+        $msgresult = json_decode($msgresult);
+        if (isset($msgresult->error)) {
+            throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
+        }
 
-        //4 message with trainspot json
+
+        /*
+        //message with trainspot json as attachment
         $subject = "Trainspot-Badge erhalten";
         $body = "Hallo! Du hast deinen Trainspt-Badge erfolgreich an deine Wallet übertragen.";
         $cc = [];
@@ -90,8 +116,6 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         //$pdfcontent = "files/trainspotbadgedata.json";
         //$pdfcontent = $tsbadge_filepath;
         //$pdfcontent = "/files/dummybadge.png";
-        $badgedatasend = json_decode($tsbadgedata, true);
-
 
         //$fileid = uploadjson($host, $badgedatasend, "dummybadge trainspot", $xapikey);
         $fileid = uploadjsondata($host, $badgedatasend, "testbadge-trainspot", $xapikey);
@@ -99,16 +123,13 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         $attachments[] = $fileid;
 
         if ($fileid) {
-            //sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
+            sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
 
-            $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $host, $xapikey);
-            $msgresult = json_decode($msgresult);
-            if (isset($msgresult->error)) {
-                throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
-            }
+            
         } else {
             echo "Fehler beim Hochladen der Datei.\n";
         }
+            */
 
         echo '<p>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</p>';
         echo '<p>' . html_writer::link(
@@ -116,12 +137,16 @@ if ($walletid != 'error' and $relationshipid != 'error') {
             get_string('previous')
         ) . '</p>';
     } else if ($mform->is_cancelled()) {
-        // Verarbeitung der Daten
+        redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
     } else {
         // Anzeigen des Formulars
         $mform->display();
     }
 } else {
+    //keine walletid oder keine relationship-id
+
+    //hole relationship-template-id, notwendig, um relationship herzustellen
+    //wenn relationship-template-id vorhanden, dann status pending..
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
     if ($templateid != 'error') { // TODO check if template is not expired!!!
@@ -132,11 +157,17 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     } else {
         //echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
-        require_once "dummydata.php";
-        global $relationshipData;
-        $templateid = createRelationshipTemplate($host, $xapikey, $peerId, $relationshipData);
+        //require_once "dummydata.php";
+        $validatedItems = get_validatedItems($connectoraddress, $attributeId);
+        $relationshipData = get_relationshipData($validatedItems);
 
-        set_user_preference('mod_tsbadge_template_id', $templateid, $userId);
+        //erstelle relationship template id
+        $templateid = createRelationshipTemplate($host, $xapikey, $relationshipData);
+
+        //schreibe relationship template id in db
+        set_user_preference('mod_tsbadge_template_id', $templateid, $USER->id);
+
+        //seite neu laden, um nächsten prozessschritt zu starten
         echo "<script>location.reload();</script>";
     }
 }

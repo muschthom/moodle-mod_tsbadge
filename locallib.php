@@ -121,7 +121,7 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
             "owner" => $connectorAddress,
             "value" => [
                 "@type" => "DisplayName",
-                "value" => "Trainspot2 THL Test Connector example"
+                "value" => "Trainspot2 THL Test Connector"
             ]
         ]
     ];
@@ -147,8 +147,11 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
 
     // JSON-String in ein PHP-Objekt umwandeln
     $responseObj = json_decode($response);
-
-    // Auf die ID zugreifen und in einer Variablen speichern
+    //echo "function createConnectorAttribute \n";
+    //var_dump($responseObj);
+    echo "<br/>";
+    // AttributeId des Attributes "DisplayName" wird gespeichert
+    //bisher nur neues Attribute für Connector gesetzt
     $id = $responseObj->result->id;
 
     // Ausgabe der ID
@@ -196,7 +199,7 @@ function validateOutgoingRequest($host, $apiKey, $peerId, $contentData)
     }
 }
 
-function createRelationshipTemplate($host, $apiKey, $peerId, $contentData)
+function createRelationshipTemplate($host, $apiKey, $contentData)
 {
     $url = $host . "/api/v2/RelationshipTemplates/Own";
     $apiUrl = $url;
@@ -236,7 +239,7 @@ function createRelationshipTemplate($host, $apiKey, $peerId, $contentData)
 
     $id = $responseObj->result->id;
 
-    // Ausgabe der ID
+    // Ausgabe der RelationshipTemplate ID
     //echo "<br/>Die createRelationshipTemplate ID ist: $id\n";
     return $id;
 }
@@ -427,48 +430,53 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 {
     global $DB, $USER;
 
-    echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
+    //hole relationship id, wenn vorhanden
+    $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
+    if ($relationshipid == 'error') {
+        echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
     eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
     scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden.";
-    // Schritt 1: QR-Code für das RelationshipTemplate abrufen
-    getQrCode($host, $apiKey, $templateId);
+        // Schritt 1: QR-Code für das RelationshipTemplate abrufen
+        getQrCode($host, $apiKey, $templateId);
 
-    // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
-    // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
-    //echo "<br/>Warte auf die Beziehungsanfrage...";
-    echo "<h1>Wenn Code gescannt ist, bitte 1 x Seite neu laden!</h1>";
+        // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
+        // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
+        //echo "<br/>Warte auf die Beziehungsanfrage...";
+        echo "<h1>Wenn Code gescannt ist, bitte 1 x Seite neu laden!</h1>";
 
-    // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
-    $relationshipData = syncAccount($host, $apiKey);
-    //echo "relationshipdata = " . "<br/>";
-    //var_dump($relationshipData);
-    //echo "<br/>";
+        //nach bestätigung des neuen kontakts in app
+        // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
+        $relationshipData = syncAccount($host, $apiKey);
+        //echo "relationshipdata = " . "<br/>";
+        //var_dump($relationshipData);
+        //echo "<br/>";
 
-    // Prüfen, ob es neue Beziehungsanfragen gibt
-    //if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
-    if (!empty($relationshipData['result']['relationships'])) {
-        echo "<script>location.reload();</script>";
+        // Prüfen, ob es neue Beziehungsanfragen gibt
+        //if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
+        if (!empty($relationshipData['result']['relationships'])) {
+            //echo "<script>location.reload();</script>";
 
-        foreach ($relationshipData['result']['relationships'] as $relationship) {
-            if ($relationship['status'] === 'Pending') {
-                // Gehe durch alle pending Änderungen
-                foreach ($relationship['changes'] as $change) {
-                    if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
-                        // Schritt 3: Beziehungsänderung akzeptieren
-                        echo "<br/>Akzeptiere Beziehungsanfrage...";
-                        set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
+            foreach ($relationshipData['result']['relationships'] as $relationship) {
+                if ($relationship['status'] === 'Pending') {
+                    // Gehe durch alle pending Änderungen
+                    foreach ($relationship['changes'] as $change) {
+                        if ($change['status'] === 'Pending' && $change['type'] === 'Creation') {
+                            // Schritt 3: Beziehungsänderung akzeptieren
+                            echo "<br/>Akzeptiere Beziehungsanfrage...";
+                            set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
 
 
-                        acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
-                        break; // Annahme, dass nur eine Änderung akzeptiert werden muss
+                            acceptRelationshipChange($host, $apiKey, $relationship['id'], $change['id']);
+                            break; // Annahme, dass nur eine Änderung akzeptiert werden muss
 
+                        }
                     }
+                    echo "<script>location.reload();</script>";
                 }
-                echo "<script>location.reload();</script>";
             }
+        } else {
+            //echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
         }
-    } else {
-        //echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
     }
 }
 
@@ -511,6 +519,85 @@ function getQrCodeAndSync($host, $apiKey, $templateId)
 }
 */
 
+function get_relationshipData($validatedItems)
+{
+    return [
+        "maxNumberOfAllocations" => 1,
+        "expiresAt" => "2024-12-31T00:00:00.000Z",
+        "content" => [
+            "@type" => "RelationshipTemplateContent",
+            "title" => "Connector  Contact",
+            "onNewRelationship" => [
+                "items" => $validatedItems
+            ]
+        ]
+    ];
+}
+
+function get_validatedItems($connectoraddress, $sourceAttributeId)
+{
+    return [
+        [
+            "@type" => "RequestItemGroup",
+            "mustBeAccepted" => true,
+            "title" => "Shared Attributes",
+            "items" => [
+                [
+                    "@type" => "ShareAttributeRequestItem",
+                    "mustBeAccepted" => true,
+                    "attribute" => [
+                        "@type" => "IdentityAttribute",
+                        "owner" => $connectoraddress,
+                        "value" => [
+                            "@type" => "DisplayName",
+                            "value" => "Trainspot2 THL Test Connector"
+                        ]
+                    ],
+                    "sourceAttributeId" => $sourceAttributeId
+                ]
+            ]
+        ]
+        /*,
+    [
+        "@type" => "RequestItemGroup",
+        "mustBeAccepted" => true,
+        "title" => "Requested Attributes",
+        "items" => [
+
+            [
+                "@type" => "ReadAttributeRequestItem",
+                "mustBeAccepted" => true,
+                "query" => [
+                    "@type" => "IdentityAttributeQuery",
+                    "valueType" => "GivenName"
+                ]
+            ],
+            [
+                "@type" => "ReadAttributeRequestItem",
+                "mustBeAccepted" => true,
+                "query" => [
+                    "@type" => "IdentityAttributeQuery",
+                    "valueType" => "Surname"
+                ]
+            ],
+            [
+                "@type" => "ReadAttributeRequestItem",
+                "mustBeAccepted" => true,
+                "query" => [
+                    "@type" => "IdentityAttributeQuery",
+                    "valueType" => "EMailAddress"
+                ]
+            ]
+
+        ]
+            
+    ]
+        */
+    ];
+}
+
+
+
 
 function get_content_data($id)
 {
@@ -530,7 +617,7 @@ function get_content_data($id)
                                 "owner" => "",
                                 "value" => [
                                     "@type" => "DisplayName",
-                                    "value" => "Demo Connector of integration example"
+                                    "value" => "Demo Connector of integration"
                                 ]
                             ],
                             "sourceAttributeId" => $id
