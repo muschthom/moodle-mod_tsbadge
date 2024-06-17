@@ -136,6 +136,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
             new moodle_url('/course/view.php?id=' . $courseid),
             get_string('previous')
         ) . '</p>';
+        
     } else if ($mform->is_cancelled()) {
         redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
     } else {
@@ -171,4 +172,11 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         echo "<script>location.reload();</script>";
     }
 }
+
+//delete wallet-connection
+echo '<p>' . html_writer::link(
+    new moodle_url('/mod/tsbadge/delete_connection.php'),
+    get_string('delete_connection', 'mod_tsbadge')
+) . '</p>';
+
 echo $OUTPUT->footer();

@@ -40,4 +40,5 @@ $string['connectoraddress_desc'] = 'ID des Connectors';
 $string['send_to_wallet'] = 'An Wallet senden';
 $string['send_files_to_wallet_success'] = 'Trainspot-Badge erfolgreich an Wallet gesendet. ';
 $string['pluginadministration'] = 'plugin administration ';
+$string['delete_connection'] = 'Alle Wallet-Verbindungsdaten löschen ';
 
