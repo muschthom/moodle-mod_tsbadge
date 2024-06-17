@@ -60,7 +60,7 @@ echo '
 </details>
 ';
 
-echo "<br/>";
+//echo "<br/>";
 $courseid = $cm->course;
 
 // AttributeId des Attributes "DisplayName" wird übergeben
@@ -77,7 +77,7 @@ $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
 if ($walletid !== 'error') {
     //echo "Wallet ID vorhanden.";
 } else {
-    echo "Wallet ID nicht gefunden.";
+    //echo "Wallet ID nicht gefunden.";
 }
 
 //hole relationship id, wenn vorhanden
@@ -85,7 +85,7 @@ $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $
 if ($relationshipid !== 'error') {
     //echo "relationshipid vorhanden.";
 } else {
-    echo "Relationship-Id nicht gefunden.";
+    //echo "Relationship-Id nicht gefunden.";
 }
 
 
