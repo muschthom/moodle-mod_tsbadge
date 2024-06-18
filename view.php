@@ -71,6 +71,7 @@ $contentData = get_content_data($attributeId);
 
 //hole json-daten des badges
 $tsbadgedata = $instance->tsbadgedata;
+$tsattributeTitle = $instance->tsattributename;
 
 //hole walletid, wenn vorhanden
 $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
@@ -99,9 +100,9 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         $relresult = getRelationship($host, $relationshipid, $xapikey);
 
         //send badge data as relationship attribute
-        $facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
+        //$facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
-        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $facetteTitle, $host, $xapikey);
+        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
         $msgresult = json_decode($msgresult);
         if (isset($msgresult->error)) {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
