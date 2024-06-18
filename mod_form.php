@@ -40,6 +40,9 @@ class mod_tsbadge_mod_form extends moodleform_mod {
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
+        $mform->addElement('text', 'tsattributename', get_string('tsattributename', 'tsbadge'), ['size' => '64']);
+
+
          $mform->addElement(
             'textarea',
             'tsbadgedata',
