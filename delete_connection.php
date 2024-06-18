@@ -31,7 +31,7 @@ $id = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'tsbadge');
 $instance = $DB->get_record('tsbadge', ['id' => $cm->instance], '*', MUST_EXIST);
 */
-require_login($course, true, $cm);
+//require_login($course, true, $cm);
 //$modulecontext = context_module::instance($cm->id);
 
 if (isguestuser()) {
@@ -39,7 +39,7 @@ if (isguestuser()) {
 }
 
 $PAGE->set_url('/mod/tsbadge/delete_connection.php');
-$PAGE->set_heading(format_string($course->fullname));
+//$PAGE->set_heading(format_string($course->fullname));
 //$PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();

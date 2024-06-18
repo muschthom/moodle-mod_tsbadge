@@ -99,8 +99,9 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         $relresult = getRelationship($host, $relationshipid, $xapikey);
 
         //send badge data as relationship attribute
+        $facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
-        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $host, $xapikey);
+        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $facetteTitle, $host, $xapikey);
         $msgresult = json_decode($msgresult);
         if (isset($msgresult->error)) {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
@@ -154,7 +155,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         //echo "templateid vorhanden"; 
         handleRelationshipProcess($host, $xapikey, $templateid);
         //echo "<script>location.reload();</script>";
-
+        
     } else {
         //echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
