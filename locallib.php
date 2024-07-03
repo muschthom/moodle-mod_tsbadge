@@ -104,11 +104,12 @@ function checkConnectorHealth($host)
         if ($data['isHealthy']) {
             echo "<br/>Connector is healthy.\n";
         } else {
-            echo "<br/>Der Connector hat Probleme.\n";
+            echo "<br/>Problem with connector.\n";
         }
     } else {
-        echo "<br/>Fehler bei der Überprüfung der Connector-Gesundheit.\n";
+        echo "<br/>Error checking connector health.\n";
     }
+    return $data['isHealthy']; 
 }
 
 

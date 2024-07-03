@@ -19,7 +19,7 @@ setInterval(async function () {
             pollinfo.innerHTML = 'Bad request';
         }
     }
-}, 5000);
+}, 3000);
 
 async function postData(url, data, jsonResponse = false) {
     const response = await fetch(url, {

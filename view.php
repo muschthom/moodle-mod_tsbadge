@@ -47,11 +47,23 @@ echo $OUTPUT->header();
 $host = $DB->get_record('config', ['name' => 'mod_tsbadge_domain_url'])->value;
 $xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
 $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
+$courseid = $cm->course;
 
-checkConnectorHealth($host);
+$connectorhealth = checkConnectorHealth($host);
 
+
+if(!$connectorhealth){
+    echo '<p>' . html_writer::link(
+        new moodle_url('/course/view.php?id=' . $courseid),
+        get_string('previous')
+    ) . '</p>';
+    echo $OUTPUT->footer();
+
+    die(); 
+}
 
 echo $OUTPUT->heading(get_string('tsbadgedatasend', 'mod_tsbadge'));
+
 
 echo ' 
 <details>
@@ -61,7 +73,6 @@ echo '
 ';
 
 //echo "<br/>";
-$courseid = $cm->course;
 
 // AttributeId des Attributes "DisplayName" wird übergeben
 $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
@@ -90,6 +101,7 @@ if ($relationshipid !== 'error') {
 }
 
 
+
 if ($walletid != 'error' and $relationshipid != 'error') {
     //echo "Wallet-ID vorhanden, RelationshipID vorhanden"; 
     //$url = new moodle_url('/block/walletsend/connect.php?badgeid=' . $badgeId);
@@ -97,12 +109,16 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
     $mform = new \mod_tsbadge\output\form\walletsendconfirm_form($url);
     if ($fromform = $mform->get_data()) {
+        
         $relresult = getRelationship($host, $relationshipid, $xapikey);
-
+        //echo "relresult = "; 
+        //var_dump($relresult); 
         //send badge data as relationship attribute
         //$facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
+        
         $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
+        //echo "msresult = " . $msgresult; 
         $msgresult = json_decode($msgresult);
         if (isset($msgresult->error)) {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
@@ -131,8 +147,8 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         } else {
             echo "Fehler beim Hochladen der Datei.\n";
         }
-            */
-
+            
+*/
         echo '<p>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</p>';
         echo '<p>' . html_writer::link(
             new moodle_url('/course/view.php?id=' . $courseid),
