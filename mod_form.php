@@ -22,15 +22,17 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/tsbadge/lib.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/tsbadge/lib.php');
 
-class mod_tsbadge_mod_form extends moodleform_mod {
+class mod_tsbadge_mod_form extends moodleform_mod
+{
 
-    function definition() {
+    function definition()
+    {
         global $CFG, $DB, $OUTPUT;
 
-        $mform =& $this->_form;
+        $mform = &$this->_form;
 
         // Section header title according to language file.
         $mform->addElement('header', 'general', get_string('general', 'tsbadge'));
@@ -42,8 +44,17 @@ class mod_tsbadge_mod_form extends moodleform_mod {
 
         $mform->addElement('text', 'tsattributename', get_string('tsattributename', 'tsbadge'), ['size' => '64']);
 
+        // Link to supprt info files 
+        $fileurl = $CFG->wwwroot . '/mod/tsbadge/ressources/Badge-Aufschlag.json'; // Pfad zur Beispieldatei im Plugin-Verzeichnis
+        $linktext = get_string('tsexamplebadge', 'mod_tsbadge'); // Sprachstring für den Linktext
+        $mform->addElement('static', 'examplefilelink', '', '<a href="' . $fileurl . '" target="_blank">' . $linktext . '</a>');
 
-         $mform->addElement(
+        $fileurl = $CFG->wwwroot . '/mod/tsbadge/ressources/greta_badge_keys.json'; // Pfad zur Beispieldatei im Plugin-Verzeichnis
+        $linktext = get_string('tsbadgekeys', 'mod_tsbadge'); // Sprachstring für den Linktext
+        $mform->addElement('static', 'examplefilelink', '', '<a href="' . $fileurl . '" target="_blank">' . $linktext . '</a>');
+
+
+        $mform->addElement(
             'textarea',
             'tsbadgedata',
             get_string('tsbadgedata', 'mod_tsbadge'),
@@ -57,7 +68,8 @@ class mod_tsbadge_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function validation($data, $files) {
+    function validation($data, $files)
+    {
         $errors = array();
 
         // Validate the 'name' field.
@@ -68,13 +80,14 @@ class mod_tsbadge_mod_form extends moodleform_mod {
         return $errors;
     }
 
-    function data_preprocessing(&$default_values) {
+    function data_preprocessing(&$default_values)
+    {
         // Set default values for the form fields.
         $default_values['name'] = 'Trainspot Badge';
-
     }
 
-    function definition_after_data() {
+    function definition_after_data()
+    {
         $mform = $this->_form;
         $data = $this->get_data();
 
@@ -82,10 +95,10 @@ class mod_tsbadge_mod_form extends moodleform_mod {
         if ($data && !empty($data->usecode)) {
             $mform->disabledIf('name', 'usecode', 'eq', 1);
         }
-
     }
 
-    function preprocess_data($data) {
+    function preprocess_data($data)
+    {
         // Modify the 'name' data before saving.
         $data->name = strtoupper($data->name);
 

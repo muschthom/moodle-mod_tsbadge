@@ -1,0 +1,26 @@
+{
+    "learningObjectMetadata": {
+        "objectTitle": "Lernwiderstände auf Grund des Kursablaufs",
+        "competencePath": "greta_v2_0/BerufspraktischesWissenUndKoennen/BeratungIndividualisierteLernunterstuetzung/Teilnehmendenorientierung",
+        "tree": "GRETA Kompetenzmodell 2.0",
+        "aspect": "Berufspraktisches Wissen und Können",
+        "area": "Beratung/Individualisierte Lernunterstützung",
+        "facet": "Teilnehmendenorientierung",
+        "subFacet": "SubFacette",
+        "level": 1,
+        "levels_as_set": true,
+        "educational_typicalLearningTime_duration": "3h45m",
+        "issuer": {
+            "id": "https://www.die-bonn.de/",
+            "name": "Deutsches Institut für Erwachsenenbildung"
+        }
+    },
+    "badge": {
+        "badgeType": "Anbieter-Badge",
+        "badgeName": "TrainSpot Anbieter-Badge",
+        "badgeID": "learningObjectMetadata['competencePath'].VariationID",
+        "badgeValue": 0.1,
+        "badgeUnit": "ECTS",
+        "creditStandard": "ECTS"
+    }
+}

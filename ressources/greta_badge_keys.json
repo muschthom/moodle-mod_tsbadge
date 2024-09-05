@@ -1,0 +1,512 @@
+{
+"gretaBadgeKey":
+ [
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/DidaktikUndMethodik/LerninhalteUndZiele",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb01-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb01-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb01-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb01-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/DidaktikUndMethodik/MethodenMedienUndLernmaterialien",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb01-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb01-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb01-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb01-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/DidaktikUndMethodik/RahmenbedingungenUndLernumgebungen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb01-kf03-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb01-kf03-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb01-kf03-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb01-kf03-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/DidaktikUndMethodik/Outcomeorientierung",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb01-kf04-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb01-kf04-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb01-kf04-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb01-kf04-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/BeratungIndividualisierteLernunterstuetzung/Teilnehmendenorientierung",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb02-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb02-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb02-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb02-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/BeratungIndividualisierteLernunterstuetzung/DiagnostikUndLernberatung",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb02-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb02-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb02-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb02-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/KommunikationUndInteraktion/ModerationUndSteuerungVonGruppen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb03-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb03-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb03-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb03-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/KommunikationUndInteraktion/ProfessionelleKommunikation",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb03-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb03-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb03-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb03-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/Organisation/KooperationMitDenAuftraggebendenArbeitgebenden",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb04-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb04-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb04-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb04-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/BerufspraktischesWissenUndKoennen/Organisation/KollegialeZusammenarbeitNetzwerken",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka01-kb04-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka01-kb04-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka01-kb04-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka01-kb04-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/FachUndFeldspezifischesWissen/Feldbezug/AdressatinnenUndAdressaten",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka02-kb01-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka02-kb01-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka02-kb01-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka02-kb01-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/FachUndFeldspezifischesWissen/Feldbezug/FeldspezifischesWissen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka02-kb01-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka02-kb01-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka02-kb01-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka02-kb01-kf02-l04"
+   }
+   ]
+   },
+    {
+    "competencePath": "greta_v2_0_1/FachUndFeldspezifischesWissen/Feldbezug/CurriculareUndInstitutionelleRahmenbedingungen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka02-kb01-kf03-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka02-kb01-kf03-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka02-kb01-kf03-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka02-kb01-kf03-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleWerthaltungenUndUeberzeugungen/Berufsethos/Menschenbilder",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka03-kb01-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka03-kb01-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka03-kb01-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka03-kb01-kf01-l04"
+   }
+   ]
+   },
+    {
+    "competencePath": "greta_v2_0_1/ProfessionelleWerthaltungenUndUeberzeugungen/Berufsethos/Wertvorstellungen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka03-kb01-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka03-kb01-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka03-kb01-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka03-kb01-kf02-l04"
+   }
+   ]
+   },
+    {
+    "competencePath": "greta_v2_0_1/ProfessionelleWerthaltungenUndUeberzeugungen/BerufsbezogeneUeberzeugungen/EigenesRollenbewusstsein",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka03-kb02-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka03-kb02-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka03-kb02-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka03-kb02-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleWerthaltungenUndUeberzeugungen/BerufsbezogeneUeberzeugungen/SubjektiveAnnahmenUeberDasLehrenUndLernen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka03-kb02-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka03-kb02-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka03-kb02-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka03-kb02-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/MotivationaleOrientierungen/Selbstwirksamkeitsüberzeugungen",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb01-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb01-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb01-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb01-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/MotivationaleOrientierungen/Enthusiasmus",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb01-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb01-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb01-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb01-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/Selbstregulation/UmgangMitFeedbackUndKritik",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb02-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb02-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb02-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb02-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/Selbstregulation/EngagementUndDistanz",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb02-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb02-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb02-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb02-kf02-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/BerufspraktischeErfahrung/ReflexionDesEigenenLehrhandelns",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb03-kf01-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb03-kf01-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb03-kf01-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb03-kf01-l04"
+   }
+   ]
+   },
+   {
+    "competencePath": "greta_v2_0_1/ProfessionelleSelbststeuerung/BerufspraktischeErfahrung/BeruflicheWeiterentwicklung",
+    "levels": 
+   [
+     {
+     "level": 1,
+    "badgeID": "greta-ka04-kb03-kf02-l01"
+   },
+   {
+     "level": 2,
+    "badgeID": "greta-ka04-kb03-kf02-l02"
+   },
+   {
+     "level": 3,
+    "badgeID": "greta-ka04-kb03-kf02-l03"
+   },
+   {
+     "level": 4,
+    "badgeID": "greta-ka04-kb03-kf02-l04"
+   }
+   ]
+   }
+ ]
+}
+
