@@ -72,12 +72,10 @@ echo '
 </details>
 ';
 
-//echo "<br/>";
 
 // AttributeId des Attributes "DisplayName" wird übergeben
 $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-echo "<br/> attributeId: ". $attributeId.  "<br/>"; 
-die(); 
+ 
 //hole connector-attribute daten
 $contentData = get_content_data($attributeId);
 
@@ -88,17 +86,18 @@ $tsattributeTitle = $instance->tsattributename;
 //hole walletid, wenn vorhanden
 $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
 if ($walletid !== 'error') {
-    //echo "Wallet ID vorhanden.";
+    echo "Wallet ID vorhanden.<br/>";
 } else {
-    //echo "Wallet ID nicht gefunden.";
+    echo "Wallet ID nicht gefunden.<br/>";
 }
+
 
 //hole relationship id, wenn vorhanden
 $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
 if ($relationshipid !== 'error') {
-    //echo "relationshipid vorhanden.";
+    echo "relationshipid vorhanden.<br/>";
 } else {
-    //echo "Relationship-Id nicht gefunden.";
+    echo "Relationship-Id nicht gefunden.<br/>";
 }
 
 
@@ -170,12 +169,12 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
     if ($templateid != 'error') { // TODO check if template is not expired!!!
-        //echo "templateid vorhanden"; 
+        echo "templateid vorhanden"; 
         handleRelationshipProcess($host, $xapikey, $templateid);
         //echo "<script>location.reload();</script>";
-        
+        die(); 
     } else {
-        //echo "nichts vorhanden, TemplateID wird erstellt"; 
+        echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
         //require_once "dummydata.php";
         $validatedItems = get_validatedItems($connectoraddress, $attributeId);
@@ -186,12 +185,13 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
         //schreibe relationship template id in db
         set_user_preference('mod_tsbadge_template_id', $templateid, $USER->id);
-
+        echo "safe mod_tsbadge_template_id in db<br/>"; 
+        
         //seite neu laden, um nächsten prozessschritt zu starten
         echo "<script>location.reload();</script>";
     }
 }
-
+die(); 
 //delete wallet-connection
 echo '<p>' . html_writer::link(
     new moodle_url('/mod/tsbadge/delete_connection.php'),

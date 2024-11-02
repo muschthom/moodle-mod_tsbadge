@@ -109,7 +109,7 @@ function checkConnectorHealth($host)
     } else {
         echo "<br/>Error checking connector health.\n";
     }
-    return $data['isHealthy']; 
+    return $data['isHealthy'];
 }
 
 
@@ -134,8 +134,7 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
     $response = curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE); // HTTP-Statuscode der Antwort
-    echo " status" . $status; 
+    //$status = curl_getinfo($ch, CURLINFO_HTTP_CODE); // HTTP-Statuscode der Antwort
     if ($response === false) {
         echo '<br/>cURL-Fehler: ' . curl_error($ch);
     }
@@ -424,20 +423,20 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
     eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
     scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden.";
-       
-    
+
+
         // Schritt 1: QR-Code für das RelationshipTemplate abrufen        
         getQrCode($host, $apiKey, $templateId);
 
         //warten, bis User QR-Code gescannt hat
         //weiterer Prozess über js und dcconnectorpoll.php
-        echo '<p id="poll-info" style="color:black;display:none;">'.get_string('waiting_for_request', 'mod_tsbadge').'</p>';
+        echo '<p id="poll-info" style="color:black;display:none;">' . get_string('waiting_for_request', 'mod_tsbadge') . '</p>';
         echo '<script src="./js/dcc.js"></script>';
         // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
         // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
         //echo "<br/>Warte auf die Beziehungsanfrage...";
         //echo "<h1>Wenn Code gescannt ist, bitte 1 x Seite neu laden!</h1>";
-/*
+        /*
         //nach bestätigung des neuen kontakts in app
         // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
         $relationshipData = syncAccount($host, $apiKey);
@@ -473,7 +472,6 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         }
             */
     }
-
 }
 
 /*
@@ -602,7 +600,6 @@ function get_content_data($id)
             "items" => [
                 [
                     "@type" => "RequestItemGroup",
-                    "mustBeAccepted" => true,
                     "title" => "Shared Attributes",
                     "items" => [
                         [
@@ -620,12 +617,14 @@ function get_content_data($id)
                         ]
                     ]
                 ],
+
+                /*
                 [
                     "@type" => "RequestItemGroup",
                     "mustBeAccepted" => true,
                     "title" => "Requested Attributes",
                     "items" => [
-                        /*
+                        
                         [
                             "@type" => "ReadAttributeRequestItem",
                             "mustBeAccepted" => true,
@@ -650,8 +649,12 @@ function get_content_data($id)
                                 "valueType" => "EMailAddress"
                             ]
                         ]
-*/]
+                    ]
                 ]
+
+                */
+
+
             ]
         ]
     ];
