@@ -115,11 +115,8 @@ function checkConnectorHealth($host)
 
 function createConnectorAttribute($host, $apiKey, $connectorAddress)
 {
-    //demo connector adress
     $payload = [
         "content" => [
-            "@type" => "IdentityAttribute",
-            "owner" => $connectorAddress,
             "value" => [
                 "@type" => "DisplayName",
                 "value" => "Trainspot2 THL Test Connector"
@@ -129,7 +126,6 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
 
     $url = $host . "/api/v2/Attributes";
     $ch = curl_init($url);
-
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
@@ -139,24 +135,14 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
     $response = curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE); // HTTP-Statuscode der Antwort
-
+    echo " status" . $status; 
     if ($response === false) {
         echo '<br/>cURL-Fehler: ' . curl_error($ch);
     }
-
     curl_close($ch);
 
-    // JSON-String in ein PHP-Objekt umwandeln
     $responseObj = json_decode($response);
-    //echo "function createConnectorAttribute \n";
-    //var_dump($responseObj);
-    echo "<br/>";
-    // AttributeId des Attributes "DisplayName" wird gespeichert
-    //bisher nur neues Attribute für Connector gesetzt
     $id = $responseObj->result->id;
-
-    // Ausgabe der ID
-    //echo "<br/>Die createConnectorAttribute ID ist: $id\n";
     return $id;
 }
 

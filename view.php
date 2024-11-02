@@ -76,7 +76,8 @@ echo '
 
 // AttributeId des Attributes "DisplayName" wird übergeben
 $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-
+echo "<br/> attributeId: ". $attributeId.  "<br/>"; 
+die(); 
 //hole connector-attribute daten
 $contentData = get_content_data($attributeId);
 
