@@ -44,7 +44,7 @@ setInterval(async function () {
         action: "poll"
     });
 
-    console.log("Server response:", result);  // Log für die Serverantwort
+    //console.log("Server response:", result);  // Log für die Serverantwort
 
     // Falls die Antwort leer ist, Prozess fortsetzen
     if (result === '') {

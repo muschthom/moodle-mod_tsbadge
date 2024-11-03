@@ -226,7 +226,6 @@ function createRelationshipTemplate($host, $apiKey, $contentData)
     $id = $responseObj->result->id;
 
     // Ausgabe der RelationshipTemplate ID
-    //echo "<br/>Die createRelationshipTemplate ID ist: $id\n";
     return $id;
 }
 
@@ -311,41 +310,6 @@ function getQrCode($host, $apiKey, $templateId)
 }
 
 
-/*
-function syncAccount($host, $apiKey)
-{
-    $url = $host . "/api/v2/Account/Sync";
-    $apiUrl = $url;
-    // Initialisiere cURL
-    $ch = curl_init();
-
-    // Setze die notwendigen Optionen für den cURL-Request
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "accept: application/json",
-        "x-api-key: $apiKey"
-    ]);
-    curl_setopt($ch, CURLOPT_POST, true);
-
-    // Führe den cURL-Request aus und speichere die Antwort
-    $response = curl_exec($ch);
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // Schließe cURL
-    curl_close($ch);
-
-    if ($statusCode < 300) {
-        // Verarbeitung der erfolgreichen Antwort
-        echo "<br/>Antwort syncAccount():\n$response\n";
-        //return json_decode($response, true);
-    } else {
-        // Fehlerbehandlung
-        return null;
-    }
-}
-    */
-
 function syncAccount($host, $apiKey)
 {
     $url = $host . "/api/v2/Account/Sync";
@@ -373,10 +337,7 @@ function syncAccount($host, $apiKey)
     // Schließe cURL
     curl_close($ch);
 
-    // Gebe Statuscode und Antwort für Debugging aus
-    echo "HTTP-Statuscode: $statusCode<br>";
-    var_dump($response);
-
+    
     // Wenn der Statuscode 204 ist, keine Inhalte zurückgeben, aber als Erfolg werten
     if ($statusCode === 204) {
         return ['status_code' => 204];
@@ -391,65 +352,6 @@ function syncAccount($host, $apiKey)
     }
 }
 
-
-
-
-/*
-function acceptRelationshipChange($host, $apiKey, $relationshipId)
-{
-    global $DB, $USER;
-
-    $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Accept";
-    $apiUrl = $url;
-
-
-    // Initialisiere cURL
-    $ch = curl_init();
-
-    // Setze die notwendigen Optionen für den cURL-Request
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "accept: application/json",
-        "content-type: application/json",
-        "x-api-key: $apiKey"
-    ]);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-
-    //$payload = json_encode(["content" => new stdClass()]); // oder ["content" => []], abhängig von der API-Spezifikation
-
-    // Führe den cURL-Request aus und speichere die Antwort
-    $response = curl_exec($ch);
-    //echo "<br/>Antwort acceptRelationshipChange():\n$response\n";
-    //global $wallet_id;
-    // Die ID extrahieren
-    $response_data = json_decode($response, true);
-    var_dump($response_data);
-    if (isset($response_data['result']['peer'])) {
-        $wallet_id = $response_data['result']['peer'];
-        set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
-    }
-
-
-
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // Schließe cURL
-    curl_close($ch);
-
-    if ($statusCode === 200) {
-        echo "Beziehungsänderung erfolgreich akzeptiert.\n";
-        //echo $statusCode;
-        // Verarbeitung der erfolgreichen Antwort
-        //echo "Beziehungsänderung erfolgreich akzeptiert.\n";
-    } else {
-        echo $statusCode;
-
-        // Fehlerbehandlung
-        echo "Fehler beim Akzeptieren der Beziehungsänderung: HTTP-Statuscode $statusCode\n";
-    }
-}
-    */
 
 function acceptRelationshipChange($host, $apiKey, $relationshipId)
 {
@@ -472,7 +374,6 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId)
 
     // Führe den cURL-Request aus und speichere die Antwort
     $response = curl_exec($ch);
-    echo "Antwortinhalt: " . ($response) . "\n";
 
     $response_data = json_decode($response, true);
 

@@ -125,30 +125,6 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         }
 
 
-        /*
-        //message with trainspot json as attachment
-        $subject = "Trainspot-Badge erhalten";
-        $body = "Hallo! Du hast deinen Trainspt-Badge erfolgreich an deine Wallet übertragen.";
-        $cc = [];
-        $attachments = [];
-        //$pdfcontent = "files/trainspotbadgedata.json";
-        //$pdfcontent = $tsbadge_filepath;
-        //$pdfcontent = "/files/dummybadge.png";
-
-        //$fileid = uploadjson($host, $badgedatasend, "dummybadge trainspot", $xapikey);
-        $fileid = uploadjsondata($host, $badgedatasend, "testbadge-trainspot", $xapikey);
-        //echo "fileid in connect: " . $fileid;
-        $attachments[] = $fileid;
-
-        if ($fileid) {
-            sendMessage($host, $xapikey, $walletid, $subject, $body, $cc, $attachments);
-
-            
-        } else {
-            echo "Fehler beim Hochladen der Datei.\n";
-        }
-            
-*/
         echo '<p>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</p>';
         echo '<p>' . html_writer::link(
             new moodle_url('/course/view.php?id=' . $courseid),
