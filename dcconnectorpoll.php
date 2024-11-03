@@ -144,6 +144,7 @@ if ($syncResponse && isset($syncResponse['status_code'])) {
     echo "statuscode: " . $syncResponse['status_code'];
     if ($syncResponse['status_code'] === 204) {
         // Status "polling" zurückgeben, wenn keine neuen Daten vorhanden sind
+        echo "polling"; 
         $result->status = 'polling';
     } else {
         // Fehlerbehandlung für andere Statuscodes oder Antworten
@@ -162,8 +163,6 @@ if ($syncResponse && isset($syncResponse['status_code'])) {
 
 // Schritt 2: Beziehungsdaten abrufen
 $relationshipData = callAPI('GET', $host . '/api/v2/Relationships', false, $apiKey);
-echo "relationshipdata";
-echo $relationshipData;
 $relationshipData = json_decode($relationshipData, true);  // JSON in ein Array umwandeln
 
 // Prüfen, ob es neue Beziehungen gibt
@@ -184,7 +183,9 @@ $relationshipData = json_decode($relationshipData, true);  // JSON in ein Array 
     }
         */
 if (!empty($relationshipData['result'])) {
+    echo "relationshipData456 <br/><br/>"; 
     var_dump($relationshipData); 
+    echo "<br/><br/>"; 
 
     foreach ($relationshipData['result'] as $relationship) {
         if (isset($relationship['status']) && $relationship['status'] === 'Pending') {
@@ -203,4 +204,6 @@ if (!empty($relationshipData['result'])) {
 
 
 // Ergebnis als JSON zurückgeben
+echo "Ergebnis als JSON zurückgeben 123: <br/><br/>"; 
+
 echo json_encode($result);

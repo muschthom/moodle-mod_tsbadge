@@ -453,6 +453,8 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId)
 
 function acceptRelationshipChange($host, $apiKey, $relationshipId)
 {
+    global $DB, $USER;
+
     $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Accept";
 
     // Initialisiere cURL
@@ -469,7 +471,10 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId)
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
     // Führe den cURL-Request aus und speichere die Antwort
-    $response_data = curl_exec($ch);
+    $response = curl_exec($ch);
+    echo "Antwortinhalt: " . ($response) . "\n";
+
+    $response_data = json_decode($response, true);
 
     // Prüfe auf cURL-Fehler
     if (curl_errno($ch)) {
@@ -482,22 +487,9 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId)
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    echo "HTTP-Statuscode: $statusCode\n";
-    echo "Antwortinhalt: " . var_export($response_data, true) . "\n";
-
-    // Fehlerbehandlung basierend auf dem Statuscode
-    if ($statusCode === 200 || $statusCode === 204) {
-        echo "Beziehungsänderung erfolgreich akzeptiert.\n";
-    } elseif ($statusCode === 400) {
-        echo "Fehler 400: Ungültige Anfrage. Bitte überprüfe die API-Dokumentation und die Anfragedaten.\n";
-    } elseif ($statusCode === 401) {
-        echo "Fehler 401: Unbefugter Zugriff. Überprüfe den API-Schlüssel.\n";
-    } elseif ($statusCode === 404) {
-        echo "Fehler 404: Beziehung nicht gefunden. Überprüfe die Relationship-ID.\n";
-    } elseif ($statusCode === 500) {
-        echo "Serverfehler 500: Interner Serverfehler. Überprüfe die Serverprotokolle für weitere Details.\n";
-    } else {
-        echo "Unbekannter Fehler: HTTP-Statuscode $statusCode\n";
+    if (isset($response_data['result']['peer'])) {
+        $wallet_id = $response_data['result']['peer'];
+        set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
     }
 }
 

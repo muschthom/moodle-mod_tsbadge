@@ -52,7 +52,8 @@ setInterval(async function () {
         // Du kannst hier andere Aktionen durchführen oder einfach den nächsten Durchlauf abwarten.
     } else {
         try {
-            let check = JSON.parse(result);
+            //let check = JSON.parse(result);
+            let check = (result);
             if (check.status == 'polling') {
                 //pollinfo.innerHTML = 'Polling';
             } else if (check.status == 'request_accepted') {
