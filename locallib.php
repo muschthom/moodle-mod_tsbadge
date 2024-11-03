@@ -823,7 +823,7 @@ function addRelationshipAttribute($host, $apiKey, $recipientId, $subject, $body,
     }
 }
 
-
+/*
 
 function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey)
 {
@@ -839,7 +839,6 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
             "items" => [
                 [
                     "@type" => "CreateAttributeRequestItem",
-                    "mustBeAccepted" => true,
                     "attribute" => [
                         "@type" => "RelationshipAttribute",
                         //"owner" => "THLuebeck",
@@ -865,6 +864,70 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
     ];
     //echo $connectorAddress; 
     $message = json_encode($data);
+/*
+    $url = $host . "/api/v2/Requests/Outgoing";
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "content-type: application/json",
+        "x-api-key: $xapikey"
+    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
+
+    $response = curl_exec($ch);
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    curl_close($ch);
+*/
+    //echo "Status Code: " . $statusCode . "\n";
+    //echo "Response: " . $response . "\n";
+/*
+    $messagedata = new stdClass();
+    $messagedata->recipients = array($walletid);
+    $messagedata->content = json_decode($response)->result->content;
+    $messagedata = json_encode($messagedata, JSON_PRETTY_PRINT);
+    //print_object($messagedata);die();
+
+    $msgresult = callAPI('POST', $host . '/api/v2/Messages', $messagedata, $xapikey);
+    //print_object($msgresult);die();
+
+    return $msgresult;
+}
+
+*/
+function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey)
+{
+    $decodedValue = json_decode($value);
+
+    $data = [
+        "content" => [
+            "@type" => "Request",
+            "items" => [
+                [
+                    "@type" => "CreateAttributeRequestItem",
+                    "attribute" => [
+                        "@type" => "RelationshipAttribute",
+                        "owner" => $connectorAddress,
+                        "key" => "customAttributeKey", // Beliebiger eindeutiger Schlüssel für das Attribut
+                        "confidentiality" => "public",
+                        "value" => [
+                            "@type" => "ProprietaryJSON",
+                            "title" => $title,
+                            "value" => $decodedValue
+                        ]
+                    ],
+                    "mustBeAccepted" => true, // Optional, je nach Anforderung
+                    "requireManualDecision" => true // Optional, je nach Anforderung
+                ]
+            ]
+        ],
+        "peer" => $walletid
+    ];
+
+    $message = json_encode($data);
 
     $url = $host . "/api/v2/Requests/Outgoing";
     $ch = curl_init($url);
@@ -883,17 +946,19 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
 
     curl_close($ch);
 
-    //echo "Status Code: " . $statusCode . "\n";
-    //echo "Response: " . $response . "\n";
+    if ($statusCode > 300) {
+        // Fehlerbehandlung für fehlgeschlagene Anfrage
+        return ["status" => $statusCode, "error" => $response];
+    }
 
+    // Bereite Nachricht zur Weiterleitung an den Peer vor
     $messagedata = new stdClass();
     $messagedata->recipients = array($walletid);
     $messagedata->content = json_decode($response)->result->content;
-    $messagedata = json_encode($messagedata, JSON_PRETTY_PRINT);
-    //print_object($messagedata);die();
-
-    $msgresult = callAPI('POST', $host . '/api/v2/Messages', $messagedata, $xapikey);
-    //print_object($msgresult);die();
+    var_dump($messagedata); 
+    $messagedatajson = json_encode($messagedata, JSON_PRETTY_PRINT);
+    echo $messagedatajson; 
+    $msgresult = callAPI('POST', $host . '/api/v2/Messages', $messagedatajson, $xapikey);
 
     return $msgresult;
 }

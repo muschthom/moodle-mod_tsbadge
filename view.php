@@ -119,7 +119,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         
         $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
         //echo "msresult = " . $msgresult; 
-        $msgresult = json_decode($msgresult);
+        //$msgresult = json_decode($msgresult);
         if (isset($msgresult->error)) {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
         }
