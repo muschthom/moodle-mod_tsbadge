@@ -26,6 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once('dcconnectorlib.php');
 require_once('locallib.php');
 
+ 
 require_login();
 
 $result = new stdClass();
@@ -73,7 +74,7 @@ foreach ($apiresult->result as $ar) {
         exit(json_encode($result));
     }
 }
-    */
+    
 
 //nach bestätigung des neuen kontakts in app
 // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
@@ -81,7 +82,7 @@ $relationshipData = syncAccount($host, $apiKey);
 //echo "relationshipdata = " . "<br/>";
 //var_dump($relationshipData);
 //echo "<br/>";
-
+/*
 // Prüfen, ob es neue Beziehungsanfragen gibt
 //if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
 if (!empty($relationshipData['result']['relationships'])) {
@@ -114,3 +115,92 @@ if (!empty($relationshipData['result']['relationships'])) {
     }
     echo json_encode($result);
 }
+*/
+
+require_once(__DIR__ . '/../../config.php');
+require_once('dcconnectorlib.php');
+require_once('locallib.php');
+
+require_login();
+
+$result = new stdClass();
+
+if (isguestuser()) {
+    $result->status = get_string('not_logged_in', 'mod_ilddigitalcert');
+    echo json_encode($result);
+    exit;
+}
+
+$host = $DB->get_record('config', ['name' => 'mod_tsbadge_domain_url'])->value;
+$apiKey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
+
+// Schritt 1: Account synchronisieren
+// Schritt 1: Account synchronisieren
+$syncResponse = syncAccount($host, $apiKey);
+
+
+// Überprüfe, ob $syncResponse eine gültige Antwort ist und der Statuscode vorhanden ist
+if ($syncResponse && isset($syncResponse['status_code'])) {
+    echo "statuscode: " . $syncResponse['status_code'];
+    if ($syncResponse['status_code'] === 204) {
+        // Status "polling" zurückgeben, wenn keine neuen Daten vorhanden sind
+        $result->status = 'polling';
+    } else {
+        // Fehlerbehandlung für andere Statuscodes oder Antworten
+        $result->status = 'error';
+        $result->message = 'Fehler beim Synchronisieren des Accounts: Unerwarteter Statuscode ' . $syncResponse['status_code'];
+        echo json_encode($result);
+        exit;
+    }
+} else {
+    // Fehlerbehandlung, wenn $syncResponse null ist oder keinen Statuscode enthält
+    $result->status = 'error';
+    $result->message = 'Fehler beim Synchronisieren des Accounts: Keine gültige Antwort von der API erhalten.';
+    echo json_encode($result);
+    exit;
+}
+
+// Schritt 2: Beziehungsdaten abrufen
+$relationshipData = callAPI('GET', $host . '/api/v2/Relationships', false, $apiKey);
+echo "relationshipdata";
+echo $relationshipData;
+$relationshipData = json_decode($relationshipData, true);  // JSON in ein Array umwandeln
+
+// Prüfen, ob es neue Beziehungen gibt
+//if (!empty($relationshipData['result']['relationships'])) {
+/*
+    foreach ($relationshipData['result']['relationships'] as $relationship) {
+        if ($relationship['newStatus'] === 'Pending') {
+            // Beziehungs-ID speichern
+            echo "<br/>set_user_preference <br/>"; 
+            set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
+
+            // Beziehungsänderung akzeptieren
+            acceptRelationshipChange($host, $apiKey, $relationship['id']);
+            $result->status = 'request_accepted';
+        } else {
+            $result->status = 'polling';
+        }
+    }
+        */
+if (!empty($relationshipData['result'])) {
+    var_dump($relationshipData); 
+
+    foreach ($relationshipData['result'] as $relationship) {
+        if (isset($relationship['status']) && $relationship['status'] === 'Pending') {
+            echo "<br/>set_user_preference <br/>";
+            set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
+
+            // Beziehungsänderung akzeptieren
+            acceptRelationshipChange($host, $apiKey, $relationship['id']);
+            $result->status = 'request_accepted';            // Weitere Verarbeitung für "Pending"-Beziehungen hier
+        }
+    }
+} else {
+    $result->status = 'polling';
+}
+
+
+
+// Ergebnis als JSON zurückgeben
+echo json_encode($result);

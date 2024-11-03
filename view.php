@@ -171,8 +171,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     if ($templateid != 'error') { // TODO check if template is not expired!!!
         echo "templateid vorhanden"; 
         handleRelationshipProcess($host, $xapikey, $templateid);
-        //echo "<script>location.reload();</script>";
-        die(); 
+        //echo "<script>location.reload();</script>"; 
     } else {
         echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
@@ -191,7 +190,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         echo "<script>location.reload();</script>";
     }
 }
-die(); 
+
 //delete wallet-connection
 echo '<p>' . html_writer::link(
     new moodle_url('/mod/tsbadge/delete_connection.php'),

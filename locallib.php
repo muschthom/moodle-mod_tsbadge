@@ -280,10 +280,8 @@ function getQrCode($host, $apiKey, $templateId)
     $url = $host . "/api/v2/RelationshipTemplates/" . $templateId;
     $apiUrl = $url;
 
-    // Initialisiere cURL
     $ch = curl_init();
 
-    // Setze die URL und verschiedene Optionen
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -291,39 +289,29 @@ function getQrCode($host, $apiKey, $templateId)
         "x-api-key: $apiKey"
     ]);
 
-    // Führe die GET-Anfrage aus
     $response = curl_exec($ch);
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    // Überprüfe auf Fehler
     if (curl_errno($ch)) {
-        // Wenn du einen Fehler im Zusammenhang mit cURL hast, solltest du entscheiden, wie damit umgegangen werden soll.
-        // Für die Anzeige eines Bildes könnte ein Standard-Fehlerbild oder eine Fehlermeldung in Bildform passend sein.
         curl_close($ch);
-        return; // Beende die Funktion, da ein Fehler aufgetreten ist.
+        return;
     }
 
-    // Schließe die cURL-Session
     curl_close($ch);
 
-    // Überprüfe den HTTP-Statuscode und verarbeite die Antwort entsprechend
     if ($statusCode === 200 && $response !== false) {
-        // Kodiere die Binärdaten des Bildes in Base64
         $base64Image = base64_encode($response);
 
-        // Erstelle den <img> Tag mit dem Base64-kodierten Bild
         echo "<br/>";
         echo '<img src="data:image/png;base64,' . $base64Image . '" alt="QR Code">';
     } else {
-        // Fehlerbehandlung, wenn der Statuscode nicht 200 ist oder die Antwort fehlerhaft ist
-        // Hier könntest du zum Beispiel eine Fehlermeldung anzeigen
         echo "<br/>";
         echo "Fehler beim Abrufen des QR-Codes: HTTP-Statuscode $statusCode";
     }
 }
 
 
-
+/*
 function syncAccount($host, $apiKey)
 {
     $url = $host . "/api/v2/Account/Sync";
@@ -347,21 +335,71 @@ function syncAccount($host, $apiKey)
     // Schließe cURL
     curl_close($ch);
 
-    if ($statusCode === 200) {
+    if ($statusCode < 300) {
         // Verarbeitung der erfolgreichen Antwort
-        //echo "<br/>Antwort syncAccount():\n$response\n";
-        return json_decode($response, true);
+        echo "<br/>Antwort syncAccount():\n$response\n";
+        //return json_decode($response, true);
     } else {
         // Fehlerbehandlung
         return null;
     }
 }
+    */
 
-function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
+function syncAccount($host, $apiKey)
+{
+    $url = $host . "/api/v2/Account/Sync";
+    // Initialisiere cURL
+    $ch = curl_init();
+
+    // Setze die notwendigen Optionen für den cURL-Request
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "x-api-key: $apiKey"
+    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+
+    // Führe den cURL-Request aus und speichere die Antwort
+    $response = curl_exec($ch);
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    // Prüfe auf cURL-Fehler
+    if (curl_errno($ch)) {
+        echo "cURL Fehler: " . curl_error($ch);
+    }
+
+    // Schließe cURL
+    curl_close($ch);
+
+    // Gebe Statuscode und Antwort für Debugging aus
+    echo "HTTP-Statuscode: $statusCode<br>";
+    var_dump($response);
+
+    // Wenn der Statuscode 204 ist, keine Inhalte zurückgeben, aber als Erfolg werten
+    if ($statusCode === 204) {
+        return ['status_code' => 204];
+    }
+
+    // Wenn der Statuscode erfolgreich (<300) ist und eine Antwort vorliegt
+    if ($statusCode < 300 && $response !== false) {
+        return json_decode($response, true);
+    } else {
+        // Fehlerbehandlung für alle anderen Fälle
+        return null;
+    }
+}
+
+
+
+
+/*
+function acceptRelationshipChange($host, $apiKey, $relationshipId)
 {
     global $DB, $USER;
 
-    $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Changes/" . $changeId . "/Accept";
+    $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Accept";
     $apiUrl = $url;
 
 
@@ -378,19 +416,20 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
     ]);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 
-    $payload = json_encode(["content" => new stdClass()]); // oder ["content" => []], abhängig von der API-Spezifikation
+    //$payload = json_encode(["content" => new stdClass()]); // oder ["content" => []], abhängig von der API-Spezifikation
 
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     // Führe den cURL-Request aus und speichere die Antwort
     $response = curl_exec($ch);
     //echo "<br/>Antwort acceptRelationshipChange():\n$response\n";
     //global $wallet_id;
     // Die ID extrahieren
     $response_data = json_decode($response, true);
+    var_dump($response_data);
+    if (isset($response_data['result']['peer'])) {
+        $wallet_id = $response_data['result']['peer'];
+        set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
+    }
 
-    $wallet_id = $response_data['result']['peer'];
-
-    set_user_preference('mod_tsbadge_wallet_id', $wallet_id, $USER->id);
 
 
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -399,6 +438,7 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
     curl_close($ch);
 
     if ($statusCode === 200) {
+        echo "Beziehungsänderung erfolgreich akzeptiert.\n";
         //echo $statusCode;
         // Verarbeitung der erfolgreichen Antwort
         //echo "Beziehungsänderung erfolgreich akzeptiert.\n";
@@ -409,6 +449,58 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId, $changeId)
         echo "Fehler beim Akzeptieren der Beziehungsänderung: HTTP-Statuscode $statusCode\n";
     }
 }
+    */
+
+function acceptRelationshipChange($host, $apiKey, $relationshipId)
+{
+    $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Accept";
+
+    // Initialisiere cURL
+    $ch = curl_init();
+
+    // Setze die notwendigen Optionen für den cURL-Request
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "content-type: application/json",
+        "x-api-key: $apiKey"
+    ]);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+
+    // Führe den cURL-Request aus und speichere die Antwort
+    $response_data = curl_exec($ch);
+
+    // Prüfe auf cURL-Fehler
+    if (curl_errno($ch)) {
+        echo "cURL Fehler: " . curl_error($ch) . "\n";
+        curl_close($ch);
+        return;
+    }
+
+    // Statuscode und Antwortinhalt für Debugging anzeigen
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    echo "HTTP-Statuscode: $statusCode\n";
+    echo "Antwortinhalt: " . var_export($response_data, true) . "\n";
+
+    // Fehlerbehandlung basierend auf dem Statuscode
+    if ($statusCode === 200 || $statusCode === 204) {
+        echo "Beziehungsänderung erfolgreich akzeptiert.\n";
+    } elseif ($statusCode === 400) {
+        echo "Fehler 400: Ungültige Anfrage. Bitte überprüfe die API-Dokumentation und die Anfragedaten.\n";
+    } elseif ($statusCode === 401) {
+        echo "Fehler 401: Unbefugter Zugriff. Überprüfe den API-Schlüssel.\n";
+    } elseif ($statusCode === 404) {
+        echo "Fehler 404: Beziehung nicht gefunden. Überprüfe die Relationship-ID.\n";
+    } elseif ($statusCode === 500) {
+        echo "Serverfehler 500: Interner Serverfehler. Überprüfe die Serverprotokolle für weitere Details.\n";
+    } else {
+        echo "Unbekannter Fehler: HTTP-Statuscode $statusCode\n";
+    }
+}
+
 
 
 
@@ -428,20 +520,18 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         // Schritt 1: QR-Code für das RelationshipTemplate abrufen        
         getQrCode($host, $apiKey, $templateId);
 
-        //warten, bis User QR-Code gescannt hat
-        //weiterer Prozess über js und dcconnectorpoll.php
         echo '<p id="poll-info" style="color:black;display:none;">' . get_string('waiting_for_request', 'mod_tsbadge') . '</p>';
         echo '<script src="./js/dcc.js"></script>';
         // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
         // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
         //echo "<br/>Warte auf die Beziehungsanfrage...";
         //echo "<h1>Wenn Code gescannt ist, bitte 1 x Seite neu laden!</h1>";
-        /*
+
         //nach bestätigung des neuen kontakts in app
         // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
         $relationshipData = syncAccount($host, $apiKey);
         //echo "relationshipdata = " . "<br/>";
-        //var_dump($relationshipData);
+        var_dump($relationshipData);
         //echo "<br/>";
 
         // Prüfen, ob es neue Beziehungsanfragen gibt
@@ -470,7 +560,6 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         } else {
             //echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
         }
-            */
     }
 }
 
