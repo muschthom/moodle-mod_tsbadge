@@ -93,7 +93,7 @@ if (!empty($relationshipData['result'])) {
             // Beziehungsänderung akzeptieren
             acceptRelationshipChange($host, $apiKey, $relationship['id']);
             $result->status = 'request_accepted';
-            var_dump($result);
+            //var_dump($result);
         }
     }
 } else {

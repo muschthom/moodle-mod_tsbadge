@@ -86,18 +86,18 @@ $tsattributeTitle = $instance->tsattributename;
 //hole walletid, wenn vorhanden
 $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
 if ($walletid !== 'error') {
-    echo "Wallet ID vorhanden.<br/>";
+    //echo "Wallet ID vorhanden.<br/>";
 } else {
-    echo "Wallet ID nicht gefunden.<br/>";
+    //echo "Wallet ID nicht gefunden.<br/>";
 }
 
 
 //hole relationship id, wenn vorhanden
 $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
 if ($relationshipid !== 'error') {
-    echo "relationshipid vorhanden.<br/>";
+    //echo "relationshipid vorhanden.<br/>";
 } else {
-    echo "Relationship-Id nicht gefunden.<br/>";
+    //echo "Relationship-Id nicht gefunden.<br/>";
 }
 
 
@@ -124,8 +124,8 @@ if ($walletid != 'error' and $relationshipid != 'error') {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
         }
 
-
-        echo '<p>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</p>';
+        echo "<br/>"; 
+        echo '<p><b>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</b></p>';
         echo '<p>' . html_writer::link(
             new moodle_url('/course/view.php?id=' . $courseid),
             get_string('previous')
@@ -145,11 +145,11 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
     if ($templateid != 'error') { // TODO check if template is not expired!!!
-        echo "templateid vorhanden"; 
+        //echo "templateid vorhanden"; 
         handleRelationshipProcess($host, $xapikey, $templateid);
         //echo "<script>location.reload();</script>"; 
     } else {
-        echo "nichts vorhanden, TemplateID wird erstellt"; 
+        //echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
         //require_once "dummydata.php";
         $validatedItems = get_validatedItems($connectoraddress, $attributeId);

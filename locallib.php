@@ -403,11 +403,19 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 
     //hole relationship id, wenn vorhanden
     $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
-    if ($relationshipid == 'error') {
-        //echo "keine relationshipid vorhanden \n"; 
+    $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
+    $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
+    //if ($relationshipid == 'error') {
+    if ($relationshipid == 'error' || $templateid == 'error' || $walletid == 'error' ) {
+            //echo "keine relationshipid vorhanden \n"; 
         echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
-    eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' target='blank'>Mein Bildungsraum-App</a> und 
-    scannen Sie den QR-Code. Folgen Sie anschließend den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  target='blank'>Google Play Store</a> heruntergeladen werden.";
+    eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' 
+    target='blank'>Mein Bildungsraum-App</a> und scannen Sie den QR-Code. Folgen Sie anschließend 
+    den Anweisungen in der App. Die App kann im <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' 
+    target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  
+    target='blank'>Google Play Store</a> heruntergeladen werden.
+    <br/>
+    <h2>Nach dem Scannen Seite bitte neu laden!</h2>";
 
 
         // Schritt 1: QR-Code für das RelationshipTemplate abrufen        
@@ -424,7 +432,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         // Schritt 2: Account synchronisieren, um nach neuen Beziehungsanfragen zu suchen
         $relationshipData = syncAccount($host, $apiKey);
         //echo "relationshipdata = " . "<br/>";
-        var_dump($relationshipData);
+        //var_dump($relationshipData);
         //echo "<br/>";
 
         // Prüfen, ob es neue Beziehungsanfragen gibt
@@ -856,9 +864,9 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
     $messagedata = new stdClass();
     $messagedata->recipients = array($walletid);
     $messagedata->content = json_decode($response)->result->content;
-    var_dump($messagedata); 
+    //var_dump($messagedata); 
     $messagedatajson = json_encode($messagedata, JSON_PRETTY_PRINT);
-    echo $messagedatajson; 
+    //echo $messagedatajson; 
     $msgresult = callAPI('POST', $host . '/api/v2/Messages', $messagedatajson, $xapikey);
 
     return $msgresult;
@@ -1127,7 +1135,7 @@ function createBadgePngFromUrl($badgeData, $outputPath)
 
     // Stelle sicher, dass alle notwendigen Daten vorhanden sind
     if (!isset($badgeData['contextid'])) {
-        echo "Keine Kontext-ID für das Badge vorhanden.";
+        //echo "Keine Kontext-ID für das Badge vorhanden.";
         return false;
     }
 
