@@ -207,6 +207,7 @@ function createRelationshipTemplate($host, $apiKey, $contentData)
 
     // Führe den cURL-Request aus und speichere die Antwort
     $response = curl_exec($ch);
+    echo $response; 
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     // Schließe cURL
@@ -507,7 +508,7 @@ function get_relationshipData($validatedItems)
 {
     return [
         "maxNumberOfAllocations" => 1,
-        "expiresAt" => "2024-12-31T00:00:00.000Z",
+        "expiresAt" => "2030-12-31T00:00:00.000Z",
         "content" => [
             "@type" => "RelationshipTemplateContent",
             "title" => "Connector  Contact",
