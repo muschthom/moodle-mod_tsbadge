@@ -25,8 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-function get_user_badges_data()
-{
+function get_user_badges_data() {
     global $DB, $USER;
     $badgesData = [];
 
@@ -66,8 +65,7 @@ function get_user_badges_data()
 
 
 
-function get_user_certificates_data()
-{
+function get_user_certificates_data() {
     global $DB, $USER;
     $certificatesData = [];
 
@@ -88,8 +86,7 @@ function get_user_certificates_data()
 }
 
 
-function checkConnectorHealth($host)
-{
+function checkConnectorHealth($host) {
     $url = $host . "/health";
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -113,8 +110,7 @@ function checkConnectorHealth($host)
 }
 
 
-function createConnectorAttribute($host, $apiKey, $connectorAddress)
-{
+function createConnectorAttribute($host, $apiKey, $connectorAddress) {
     $payload = [
         "content" => [
             "value" => [
@@ -146,8 +142,7 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress)
 }
 
 
-function validateOutgoingRequest($host, $apiKey, $peerId, $contentData)
-{
+function validateOutgoingRequest($host, $apiKey, $peerId, $contentData) {
     $url = $host . "/api/v2/Requests/Outgoing/Validate";
     $apiUrl = $url;
     // Hier erfolgt die Kodierung von $contentData, das bereits die richtige Struktur hat
@@ -185,8 +180,7 @@ function validateOutgoingRequest($host, $apiKey, $peerId, $contentData)
     }
 }
 
-function createRelationshipTemplate($host, $apiKey, $contentData)
-{
+function createRelationshipTemplate($host, $apiKey, $contentData) {
     $url = $host . "/api/v2/RelationshipTemplates/Own";
     $apiUrl = $url;
 
@@ -207,7 +201,7 @@ function createRelationshipTemplate($host, $apiKey, $contentData)
 
     // Führe den cURL-Request aus und speichere die Antwort
     $response = curl_exec($ch);
-    echo $response; 
+    echo $response;
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
     // Schließe cURL
@@ -231,8 +225,7 @@ function createRelationshipTemplate($host, $apiKey, $contentData)
 }
 
 
-function getRelationship($host, $relationshipId, $xApiKey)
-{
+function getRelationship($host, $relationshipId, $xApiKey) {
     // Erstelle die vollständige URL für die Anfrage
     $apiUrl = $host . '/api/v2/Relationships/' . $relationshipId;
 
@@ -275,8 +268,7 @@ function getRelationship($host, $relationshipId, $xApiKey)
 }
 
 
-function getQrCode($host, $apiKey, $templateId)
-{
+function getQrCode($host, $apiKey, $templateId) {
     $url = $host . "/api/v2/RelationshipTemplates/" . $templateId;
     $apiUrl = $url;
 
@@ -311,8 +303,7 @@ function getQrCode($host, $apiKey, $templateId)
 }
 
 
-function syncAccount($host, $apiKey)
-{
+function syncAccount($host, $apiKey) {
     $url = $host . "/api/v2/Account/Sync";
     // Initialisiere cURL
     $ch = curl_init();
@@ -338,7 +329,7 @@ function syncAccount($host, $apiKey)
     // Schließe cURL
     curl_close($ch);
 
-    
+
     // Wenn der Statuscode 204 ist, keine Inhalte zurückgeben, aber als Erfolg werten
     if ($statusCode === 204) {
         return ['status_code' => 204];
@@ -354,8 +345,7 @@ function syncAccount($host, $apiKey)
 }
 
 
-function acceptRelationshipChange($host, $apiKey, $relationshipId)
-{
+function acceptRelationshipChange($host, $apiKey, $relationshipId) {
     global $DB, $USER;
 
     $url = $host . "/api/v2/Relationships/" . $relationshipId . "/Accept";
@@ -397,9 +387,8 @@ function acceptRelationshipChange($host, $apiKey, $relationshipId)
 
 
 
-
-function handleRelationshipProcess($host, $apiKey, $templateId)
-{
+/*
+function handleRelationshipProcess($host, $apiKey, $templateId) {
     global $DB, $USER;
 
     //hole relationship id, wenn vorhanden
@@ -407,8 +396,8 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
     $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
     //if ($relationshipid == 'error') {
-    if ($relationshipid == 'error' || $templateid == 'error' || $walletid == 'error' ) {
-            //echo "keine relationshipid vorhanden \n"; 
+    if ($relationshipid == 'error' || $templateid == 'error' || $walletid == 'error') {
+        //echo "keine relationshipid vorhanden \n"; 
         echo "<p>Um Ihr digitales Zertifikat an die Wallet zu senden, müssen Sie erst 
     eine Verbindung zu dieser herstellen. Öffnen Sie dazu die <a href='https://www.meinbildungsraum.de/' 
     target='blank'>Mein Bildungsraum-App</a> und scannen Sie den QR-Code. Folgen Sie anschließend 
@@ -423,7 +412,6 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         getQrCode($host, $apiKey, $templateId);
 
         echo '<p id="poll-info" style="color:black;display:none;">' . get_string('waiting_for_request', 'mod_tsbadge') . '</p>';
-        echo '<script src="./js/dcc.js"></script>';
         // Warte und gib dem Benutzer Zeit, den QR-Code zu scannen und die Beziehung zu initiieren
         // Dies ist eher ein konzeptioneller Schritt. In einer echten Anwendung müsstest du auf ein Benutzereingriff warten oder regelmäßig den Status prüfen.
         //echo "<br/>Warte auf die Beziehungsanfrage...";
@@ -439,7 +427,7 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
         // Prüfen, ob es neue Beziehungsanfragen gibt
         //if ($relationshipData && !empty($relationshipData['result']['relationships'])) {
         if (!empty($relationshipData['result']['relationships'])) {
-            //echo "<script>location.reload();</script>";
+            echo "<script>location.reload();</script>";
 
             foreach ($relationshipData['result']['relationships'] as $relationship) {
                 if ($relationship['status'] === 'Pending') {
@@ -456,13 +444,58 @@ function handleRelationshipProcess($host, $apiKey, $templateId)
 
                         }
                     }
-                    echo "<script>location.reload();</script>";
+                    echo "<script>window.location.reload();</script>";
                 }
+                echo "<script>window.location.reload();</script>";
             }
         } else {
             //echo "<br/>Keine neuen Beziehungsanfragen gefunden.";
         }
     }
+}
+    */
+
+function handleRelationshipProcess($host, $apiKey, $templateId) {
+    global $USER, $CFG;
+
+    // Check required preferences
+    $relationshipid = get_user_preferences('mod_tsbadge_relationship_id', 'error', $USER->id);
+    $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
+    $walletid = get_user_preferences('mod_tsbadge_wallet_id', 'error', $USER->id);
+
+    // If all preferences exist, nothing to do
+    if ($relationshipid !== 'error' && $templateid !== 'error' && $walletid !== 'error') {
+        return true;
+    }
+
+    // Show wallet connection instructions
+    echo '<div class="wallet-instructions">';
+    echo '<p>' . get_string('wallet_connect_instructions', 'mod_tsbadge') . '</p>';
+    echo '</div>';
+
+    // Generate and display QR code
+    getQrCode($host, $apiKey, $templateId);
+
+    // Setup polling
+    echo '<p id="poll-info" style="color:black;display:none;">' . get_string('waiting_for_request', 'mod_tsbadge') . '</p>';
+
+    // Check for pending relationships
+    $relationshipData = syncAccount($host, $apiKey);
+    if (!empty($relationshipData['result']['relationships'])) {
+        foreach ($relationshipData['result']['relationships'] as $relationship) {
+            if ($relationship['status'] === 'Pending') {
+                // Store relationship ID and accept it
+                set_user_preference('mod_tsbadge_relationship_id', $relationship['id'], $USER->id);
+                acceptRelationshipChange($host, $apiKey, $relationship['id']);
+
+                // Single reload point
+                echo "<script>window.location.reload();</script>";
+                exit();
+            }
+        }
+    }
+
+    return false;
 }
 
 /*
@@ -504,8 +537,7 @@ function getQrCodeAndSync($host, $apiKey, $templateId)
 }
 */
 
-function get_relationshipData($validatedItems)
-{
+function get_relationshipData($validatedItems) {
     return [
         "maxNumberOfAllocations" => 1,
         "expiresAt" => "2030-12-31T00:00:00.000Z",
@@ -519,8 +551,7 @@ function get_relationshipData($validatedItems)
     ];
 }
 
-function get_validatedItems($connectoraddress, $sourceAttributeId)
-{
+function get_validatedItems($connectoraddress, $sourceAttributeId) {
     return [
         [
             "@type" => "RequestItemGroup",
@@ -584,8 +615,7 @@ function get_validatedItems($connectoraddress, $sourceAttributeId)
 
 
 
-function get_content_data($id)
-{
+function get_content_data($id) {
     return [
         "content" => [
             "items" => [
@@ -652,8 +682,7 @@ function get_content_data($id)
 }
 
 
-function sendMessage($host, $apiKey, $recipientId, $subject, $body, $cc = [], $attachments = [])
-{
+function sendMessage($host, $apiKey, $recipientId, $subject, $body, $cc = [], $attachments = []) {
     $url = $host . "/api/v2/Messages";
 
     $payload = json_encode([
@@ -693,8 +722,7 @@ function sendMessage($host, $apiKey, $recipientId, $subject, $body, $cc = [], $a
 }
 
 
-function addRelationshipAttribute($host, $apiKey, $recipientId, $subject, $body, $cc = [], $attachments = [])
-{
+function addRelationshipAttribute($host, $apiKey, $recipientId, $subject, $body, $cc = [], $attachments = []) {
     $url = $host . "/api/v2/Messages";
 
     $payload = json_encode([
@@ -792,8 +820,8 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
 
     curl_close($ch);
 */
-    //echo "Status Code: " . $statusCode . "\n";
-    //echo "Response: " . $response . "\n";
+//echo "Status Code: " . $statusCode . "\n";
+//echo "Response: " . $response . "\n";
 /*
     $messagedata = new stdClass();
     $messagedata->recipients = array($walletid);
@@ -808,8 +836,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
 }
 
 */
-function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey)
-{
+function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey) {
     $decodedValue = json_decode($value);
 
     $data = [
@@ -874,8 +901,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
 }
 
 
-function callAPI($method, $url, $data, $xapikey, $image = false)
-{
+function callAPI($method, $url, $data, $xapikey, $image = false) {
     $curl = curl_init();
     switch ($method) {
         case "POST":
@@ -915,8 +941,7 @@ function callAPI($method, $url, $data, $xapikey, $image = false)
 }
 
 
-function uploadbadge($host, $pdfcontentPath, $certname, $xapikey)
-{
+function uploadbadge($host, $pdfcontentPath, $certname, $xapikey) {
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.png';
 
     if (!file_exists($pdfcontentPath)) {
@@ -940,8 +965,7 @@ function uploadbadge($host, $pdfcontentPath, $certname, $xapikey)
     return false;
 }
 
-function uploadpdf($host, $pdfcontentPath, $certname, $xapikey)
-{
+function uploadpdf($host, $pdfcontentPath, $certname, $xapikey) {
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.pdf';
 
     if (!file_exists($pdfcontentPath)) {
@@ -966,8 +990,7 @@ function uploadpdf($host, $pdfcontentPath, $certname, $xapikey)
 }
 
 
-function uploadjson($host, $pdfcontentPath, $certname, $xapikey)
-{
+function uploadjson($host, $pdfcontentPath, $certname, $xapikey) {
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
 
 
@@ -993,8 +1016,7 @@ function uploadjson($host, $pdfcontentPath, $certname, $xapikey)
     return false;
 }
 
-function uploadjsondata($host, $data, $certname, $xapikey)
-{
+function uploadjsondata($host, $data, $certname, $xapikey) {
     $jsondata = json_encode($data) ?: $data;
     $filename = tempnam(sys_get_temp_dir(), $certname) . '.json';
 
@@ -1010,8 +1032,7 @@ function uploadjsondata($host, $data, $certname, $xapikey)
     return false;
 }
 
-function callapifileupload($filename, $title, $description, $url, $xapikey)
-{
+function callapifileupload($filename, $title, $description, $url, $xapikey) {
     $ch = curl_init();
     $headers = [
         'X-API-KEY: ' . $xapikey,
@@ -1051,8 +1072,7 @@ function callapifileupload($filename, $title, $description, $url, $xapikey)
 
 
 
-function fetchBadgeDataFromDB($badgeid, $userid)
-{
+function fetchBadgeDataFromDB($badgeid, $userid) {
     global $DB;
 
     // Lade die Badge-Informationen aus `mdl_badge`
@@ -1130,8 +1150,7 @@ function fetchBadgeDataFromDB($badgeid, $userid)
 
 
 
-function createBadgePngFromUrl($badgeData, $outputPath)
-{
+function createBadgePngFromUrl($badgeData, $outputPath) {
     global $CFG;
 
     // Stelle sicher, dass alle notwendigen Daten vorhanden sind
@@ -1189,8 +1208,7 @@ function createBadgePngFromUrl($badgeData, $outputPath)
 }
 
 
-function create_json_badge($data, $name)
-{
+function create_json_badge($data, $name) {
     // Konvertiere den JSON-String in ein Array
     $json_data = json_decode($data, true);
 
@@ -1213,8 +1231,7 @@ function create_json_badge($data, $name)
 
 
 
-function send_attributes($attributes, $walletid, $reason, $url, $xapikey)
-{
+function send_attributes($attributes, $walletid, $reason, $url, $xapikey) {
     $requesttype = new stdClass();
     //$requesttype -> {'@type'} = "Request"; 
     $items = array();

@@ -46,5 +46,9 @@ $string['tsbadgedata'] = 'Badge data in json format';
 $string['tsattributename'] = 'Attributname';
 $string['tsexamplebadge'] = 'Download example file with badge data in json format';
 $string['tsbadgekeys'] = 'Download file with badge key overview';
-
-
+$string['wallet_connect_instructions'] = "To send your digital certificate to the wallet, you must first establish a connection to it. 
+                To do this, open the app 'Mein Bildungsraum' Wallet and scan the QR code. Then, follow the instructions in the app. 
+                The app can be downloaded at the <a href = 'https://apps.apple.com/de/app/mein-bildungsraum-wallet/id6467007352' 
+                target='blank'>Apple Store</a> and at the <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  
+                target='blank'>Google Play Store</a>.";
+$string['not_logged_in'] = 'User is not logged in';

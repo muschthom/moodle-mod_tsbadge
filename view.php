@@ -119,6 +119,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         
         $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
         //echo "msresult = " . $msgresult; 
+        //var_dump($msgresult);
         //$msgresult = json_decode($msgresult);
         if (isset($msgresult->error)) {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
@@ -139,19 +140,16 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     }
 } else {
     //keine walletid oder keine relationship-id
-
     //hole relationship-template-id, notwendig, um relationship herzustellen
     //wenn relationship-template-id vorhanden, dann status pending..
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
-    if ($templateid != 'error') { // TODO check if template is not expired!!!
-        //echo "templateid vorhanden"; 
+    if ($templateid != 'error') { 
+        echo '<script src="./js/tsconnectorpoll.js"></script>';
         handleRelationshipProcess($host, $xapikey, $templateid);
-        //echo "<script>location.reload();</script>"; 
     } else {
         //echo "nichts vorhanden, TemplateID wird erstellt"; 
         //set user preference
-        //require_once "dummydata.php";
         $validatedItems = get_validatedItems($connectoraddress, $attributeId);
         $relationshipData = get_relationshipData($validatedItems);
 
