@@ -52,14 +52,14 @@ $courseid = $cm->course;
 $connectorhealth = checkConnectorHealth($host);
 
 
-if(!$connectorhealth){
+if (!$connectorhealth) {
     echo '<p>' . html_writer::link(
         new moodle_url('/course/view.php?id=' . $courseid),
         get_string('previous')
     ) . '</p>';
     echo $OUTPUT->footer();
 
-    die(); 
+    die();
 }
 
 echo $OUTPUT->heading(get_string('tsbadgedatasend', 'mod_tsbadge'));
@@ -73,11 +73,19 @@ echo '
 ';
 
 
-// AttributeId des Attributes "DisplayName" wird übergeben
-$attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
- 
+if (get_config('mod_tsbadge', 'connectorattributeid') == '') {
+    echo "<br> connectorattributeid leer: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
+    $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
+    set_config('connectorattributeid', $attributeId, 'mod_tsbadge');
+    echo "copy value $connectoraddress and put it into tsbadge settings -> Connector Attribute Id <br/>";
+    die(); 
+} else {
+    echo "<br> connectorattributeid vorhanden: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
+    $attributeId = get_config('mod_tsbadge', 'connectorattributeid');
+}
 //hole connector-attribute daten
 $contentData = get_content_data($attributeId);
+
 
 //hole json-daten des badges
 $tsbadgedata = $instance->tsbadgedata;
@@ -109,14 +117,14 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
     $mform = new \mod_tsbadge\output\form\walletsendconfirm_form($url);
     if ($fromform = $mform->get_data()) {
-        
+
         $relresult = getRelationship($host, $relationshipid, $xapikey);
         //echo "relresult = "; 
         //var_dump($relresult); 
         //send badge data as relationship attribute
         //$facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
-        
+
         $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
         //echo "msresult = " . $msgresult; 
         //var_dump($msgresult);
@@ -125,13 +133,12 @@ if ($walletid != 'error' and $relationshipid != 'error') {
             throw new coding_exception(get_string('msg_send_error', 'mod_ilddigitalcert'));
         }
 
-        echo "<br/>"; 
+        echo "<br/>";
         echo '<p><b>' . get_string('send_files_to_wallet_success', 'mod_tsbadge') . '</b></p>';
         echo '<p>' . html_writer::link(
             new moodle_url('/course/view.php?id=' . $courseid),
             get_string('previous')
         ) . '</p>';
-        
     } else if ($mform->is_cancelled()) {
         redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
     } else {
@@ -144,7 +151,7 @@ if ($walletid != 'error' and $relationshipid != 'error') {
     //wenn relationship-template-id vorhanden, dann status pending..
     $templateid = get_user_preferences('mod_tsbadge_template_id', 'error', $USER->id);
 
-    if ($templateid != 'error') { 
+    if ($templateid != 'error') {
         echo '<script src="./js/tsconnectorpoll.js"></script>';
         handleRelationshipProcess($host, $xapikey, $templateid);
     } else {
@@ -158,8 +165,8 @@ if ($walletid != 'error' and $relationshipid != 'error') {
 
         //schreibe relationship template id in db
         set_user_preference('mod_tsbadge_template_id', $templateid, $USER->id);
-        echo "safe mod_tsbadge_template_id in db<br/>"; 
-        
+        echo "safe mod_tsbadge_template_id in db<br/>";
+
         //seite neu laden, um nächsten prozessschritt zu starten
         echo "<script>location.reload();</script>";
     }

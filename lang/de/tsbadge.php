@@ -53,3 +53,5 @@ $string['wallet_connect_instructions'] = "Um Ihr digitales Zertifikat an die Wal
                 target='blank'>Apple Store</a> und im <a href='https://play.google.com/store/apps/details?id=de.bildungsraum.wallet.beta&pli=1'  
                 target='blank'>Google Play Store</a> heruntergeladen werden.";
 $string['not_logged_in'] = 'User ist nicht eingeloggt';
+$string['connectorattributeid'] = 'Connector Attribute Id';
+$string['connectorattributeid_desc'] = 'Connector Attribute Id Beschreibung';

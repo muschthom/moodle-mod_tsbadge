@@ -49,13 +49,23 @@ if ($ADMIN->fulltree) {
         );
         
         $settings->add(
-        new admin_setting_configtext(
-            'mod_tsbadge_connector_address',
-            get_string('connectoraddress', 'tsbadge'),
-            get_string('connectoraddress_desc', 'tsbadge'),
-            '',
-            PARAM_TEXT
-        )
-    );
+            new admin_setting_configtext(
+                'mod_tsbadge_connector_address',
+                get_string('connectoraddress', 'tsbadge'),
+                get_string('connectoraddress_desc', 'tsbadge'),
+                '',
+                PARAM_TEXT
+            )
+        );
+
+        $settings->add(
+            new admin_setting_configtext(
+                'mod_tsbadge_connector_attribute_id',
+                get_string('connectorattributeid', 'tsbadge'),
+                get_string('connectorattributeid_desc', 'tsbadge'),
+                '',
+                PARAM_TEXT
+            )
+        );
     
 }

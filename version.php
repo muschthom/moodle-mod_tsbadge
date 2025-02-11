@@ -25,4 +25,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_tsbadge';
-$plugin->version = 2025010601;
+$plugin->version = 2025021001;
