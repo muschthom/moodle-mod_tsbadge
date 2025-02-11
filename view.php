@@ -73,15 +73,19 @@ echo '
 ';
 
 
-if (get_config('mod_tsbadge', 'connectorattributeid') == '') {
-    echo "<br> connectorattributeid leer: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
+if ($DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value == '') {
+    echo "<br> connectorattributeid leer: " . $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value . "<br>"; 
     $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-    set_config('connectorattributeid', $attributeId, 'mod_tsbadge');
+    $record = new stdClass();
+    $record->name  = 'mod_tsbadge_connector_attribute_id';  // Der Name des Eintrags
+    $record->value = $attributeId;       // Der Wert
+    echo "<br/>gespeicherter wert in db = " . $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value ."<br/>"; 
     echo "copy value $attributeId and put it into tsbadge settings -> Connector Attribute Id <br/>";
+    $DB->insert_record('config', $record);
     die(); 
 } else {
-    echo "<br> connectorattributeid vorhanden: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
-    $attributeId = get_config('mod_tsbadge', 'connectorattributeid');
+    $attributeId = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value;
+    echo "<br> connectorattributeid vorhanden: " . $attributeId . "<br>"; 
 }
 //hole connector-attribute daten
 $contentData = get_content_data($attributeId);
