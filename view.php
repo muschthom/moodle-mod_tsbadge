@@ -77,7 +77,7 @@ if (get_config('mod_tsbadge', 'connectorattributeid') == '') {
     echo "<br> connectorattributeid leer: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
     $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
     set_config('connectorattributeid', $attributeId, 'mod_tsbadge');
-    echo "copy value $connectoraddress and put it into tsbadge settings -> Connector Attribute Id <br/>";
+    echo "copy value $attributeId and put it into tsbadge settings -> Connector Attribute Id <br/>";
     die(); 
 } else {
     echo "<br> connectorattributeid vorhanden: " . get_config('mod_tsbadge', 'connectorattributeid') . "<br>"; 
