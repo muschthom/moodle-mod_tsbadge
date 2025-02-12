@@ -943,7 +943,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
         // Fehlerbehandlung für fehlgeschlagene Anfrage
         return ["status" => $statusCode, "error" => $response];
     }
-    echo "<br/><br>server response = " . $response . "<br/><br/>"; 
+    //echo "<br/><br>server response = " . $response . "<br/><br/>"; 
     // Bereite Nachricht zur Weiterleitung an den Peer vor
     $messagedata = new stdClass();
     $messagedata->recipients = array($walletid);
