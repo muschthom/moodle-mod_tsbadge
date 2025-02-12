@@ -921,7 +921,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
     ];
 
     $message = json_encode($data);
-    echo "<br/>message send to wallet: " . $message ."<br><br/>"; 
+    //echo "<br/>message send to wallet: " . $message ."<br><br/>"; 
     $url = $host . "/api/v2/Requests/Outgoing";
     $ch = curl_init($url);
 

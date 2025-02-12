@@ -49,21 +49,17 @@ $xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
 $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
 $courseid = $cm->course;
 
-/*
-$attributeId = "ATTe7geebifG1E50cQWk"; 
-deleteConnectorAttribute($host, $xapikey, $attributeId); 
-*/
 $connectorhealth = checkConnectorHealth($host);
 
 $connectorAttributes = getConnectorAttributes($host, $xapikey);
-echo "connectorAttributes: " . ($connectorAttributes);
+//echo "connectorAttributes: " . ($connectorAttributes);
 $response = json_decode($connectorAttributes, true);
 
 //die(); 
 if (isset($response['result']) && !empty($response['result'])) {
-    echo "nihct leer";
+    //echo "nihct leer";
     $attributeId = getDisplayNameId($connectorAttributes);
-    echo "AttributeId: " . $attributeId . "<br/>";
+    //echo "AttributeId: " . $attributeId . "<br/>";
 } else {
     echo "leer";
     $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
@@ -75,6 +71,7 @@ if (isset($response['result']) && !empty($response['result'])) {
     die();
     */
 }
+
 
 if (!$connectorhealth) {
     echo '<p>' . html_writer::link(
@@ -139,10 +136,11 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         //send badge data as relationship attribute
         //$facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
+        /*
         echo "<br/>tsbadgedata<br/>"; 
         var_dump($tsbadgedata); 
         echo "<br/>tsattributeTitle = " . $tsattributeTitle . "<br/>"; 
-
+        */
         $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey, $tsattributeTitle);
         //echo "msresult = " . $msgresult; 
         //var_dump($msgresult);
