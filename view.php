@@ -49,8 +49,32 @@ $xapikey = $DB->get_record('config', ['name' => 'mod_tsbadge_api_key'])->value;
 $connectoraddress = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_address'])->value;
 $courseid = $cm->course;
 
+/*
+$attributeId = "ATTe7geebifG1E50cQWk"; 
+deleteConnectorAttribute($host, $xapikey, $attributeId); 
+*/
 $connectorhealth = checkConnectorHealth($host);
 
+$connectorAttributes = getConnectorAttributes($host, $xapikey);
+echo "connectorAttributes: " . ($connectorAttributes);
+$response = json_decode($connectorAttributes, true);
+
+//die(); 
+if (isset($response['result']) && !empty($response['result'])) {
+    echo "nihct leer";
+    $attributeId = getDisplayNameId($connectorAttributes);
+    echo "AttributeId: " . $attributeId . "<br/>";
+} else {
+    echo "leer";
+    $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
+    /*
+    $record = new stdClass();
+    $record->name  = 'mod_tsbadge_connector_attribute_id';  // Der Name des Eintrags
+    $record->value = $attributeId;       // Der Wert
+    $DB->insert_record('config', $record);
+    die();
+    */
+}
 
 if (!$connectorhealth) {
     echo '<p>' . html_writer::link(
@@ -73,20 +97,7 @@ echo '
 ';
 
 
-if ($DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value == '') {
-    echo "<br> connectorattributeid leer: " . $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value . "<br>"; 
-    $attributeId = createConnectorAttribute($host, $xapikey, $connectoraddress);
-    $record = new stdClass();
-    $record->name  = 'mod_tsbadge_connector_attribute_id';  // Der Name des Eintrags
-    $record->value = $attributeId;       // Der Wert
-    echo "<br/>gespeicherter wert in db = " . $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value ."<br/>"; 
-    echo "copy value $attributeId and put it into tsbadge settings -> Connector Attribute Id <br/>";
-    $DB->insert_record('config', $record);
-    die(); 
-} else {
-    $attributeId = $DB->get_record('config', ['name' => 'mod_tsbadge_connector_attribute_id'])->value;
-    echo "<br> connectorattributeid vorhanden: " . $attributeId . "<br>"; 
-}
+
 //hole connector-attribute daten
 $contentData = get_content_data($attributeId);
 
@@ -128,8 +139,11 @@ if ($walletid != 'error' and $relationshipid != 'error') {
         //send badge data as relationship attribute
         //$facetteTitle = "Trainspot Testbadge Facette: Methoden, Medien und Lernmaterialien, Level 2"; 
         $badgedatasend = json_decode($tsbadgedata, true);
+        echo "<br/>tsbadgedata<br/>"; 
+        var_dump($tsbadgedata); 
+        echo "<br/>tsattributeTitle = " . $tsattributeTitle . "<br/>"; 
 
-        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey);
+        $msgresult = send_rl_attributes($walletid, $connectoraddress, $tsbadgedata, $tsattributeTitle, $host, $xapikey, $tsattributeTitle);
         //echo "msresult = " . $msgresult; 
         //var_dump($msgresult);
         //$msgresult = json_decode($msgresult);

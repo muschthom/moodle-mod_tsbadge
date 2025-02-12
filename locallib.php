@@ -110,6 +110,43 @@ function checkConnectorHealth($host) {
 }
 
 
+function getConnectorAttributes($host, $apiKey) {
+    $url = $host . "/api/v2/Attributes";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        "X-API-KEY: $apiKey"
+    ]);
+    $response = curl_exec($ch);
+    if ($response === false) {
+        echo '<br/>cURL-Fehler: ' . curl_error($ch);
+        return null;
+    }
+    curl_close($ch);
+    //return json_decode($response, true);
+    return $response;
+}
+
+function deleteConnectorAttribute($host, $apiKey, $attributeId) {
+    $url = $host . "/api/v2/Attributes/" . $attributeId;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        "X-API-KEY: $apiKey"
+    ]);
+    $response = curl_exec($ch);
+    if ($response === false) {
+        echo 'cURL-Fehler: ' . curl_error($ch);
+    } else {
+        echo 'Antwort: ' . $response;
+    }
+    curl_close($ch);
+}
+
+
 function createConnectorAttribute($host, $apiKey, $connectorAddress) {
     $payload = [
         "content" => [
@@ -135,12 +172,31 @@ function createConnectorAttribute($host, $apiKey, $connectorAddress) {
         echo '<br/>cURL-Fehler: ' . curl_error($ch);
     }
     curl_close($ch);
-
+    echo "<br/>createConnectorAttribute response: $response<br/>";
     $responseObj = json_decode($response);
     $id = $responseObj->result->id;
     return $id;
 }
 
+function getDisplayNameId($json) {
+    // JSON-Daten dekodieren
+    $data = json_decode($json, true);
+
+    // Überprüfen, ob das "result"-Array vorhanden ist
+    if (!isset($data['result']) || !is_array($data['result'])) {
+        return null;
+    }
+
+    // Durch die Einträge iterieren und nach "@type":"DisplayName" suchen
+    foreach ($data['result'] as $item) {
+        if (isset($item['content']['value']['@type']) && $item['content']['value']['@type'] === 'DisplayName') {
+            return $item['id']; // ID zurückgeben, wenn "DisplayName" gefunden wurde
+        }
+    }
+
+    // Wenn kein "DisplayName" gefunden wurde, null zurückgeben
+    return null;
+}
 
 function validateOutgoingRequest($host, $apiKey, $peerId, $contentData) {
     $url = $host . "/api/v2/Requests/Outgoing/Validate";
@@ -836,7 +892,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
 }
 
 */
-function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey) {
+function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host, $xapikey, $customAttributeKey) {
     $decodedValue = json_decode($value);
 
     $data = [
@@ -848,7 +904,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
                     "attribute" => [
                         "@type" => "RelationshipAttribute",
                         "owner" => $connectorAddress,
-                        "key" => "customAttributeKey", // Beliebiger eindeutiger Schlüssel für das Attribut
+                        "key" => $customAttributeKey, // Beliebiger eindeutiger Schlüssel für das Attribut
                         "confidentiality" => "public",
                         "value" => [
                             "@type" => "ProprietaryJSON",
@@ -865,7 +921,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
     ];
 
     $message = json_encode($data);
-
+    echo "<br/>message send to wallet: " . $message ."<br><br/>"; 
     $url = $host . "/api/v2/Requests/Outgoing";
     $ch = curl_init($url);
 
@@ -887,7 +943,7 @@ function send_rl_attributes($walletid, $connectorAddress, $value, $title, $host,
         // Fehlerbehandlung für fehlgeschlagene Anfrage
         return ["status" => $statusCode, "error" => $response];
     }
-
+    echo "<br/><br>server response = " . $response . "<br/><br/>"; 
     // Bereite Nachricht zur Weiterleitung an den Peer vor
     $messagedata = new stdClass();
     $messagedata->recipients = array($walletid);
