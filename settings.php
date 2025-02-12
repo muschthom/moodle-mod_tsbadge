@@ -28,44 +28,33 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
 
-        $settings->add(
-            new admin_setting_configtext(
-                'mod_tsbadge_domain_url',
-                get_string('domainurl', 'tsbadge'),
-                get_string('domainurl_desc', 'tsbadge'),
-                '',
-                PARAM_URL // Verwende PARAM_URL, wenn du sicherstellen möchtest, dass die Eingabe eine gültige URL ist
-            )
-        );
-    
-        $settings->add(
-            new admin_setting_configtext(
-                'mod_tsbadge_api_key',
-                get_string('apikey', 'tsbadge'),
-                get_string('apikey_desc', 'tsbadge'),
-                '',
-                PARAM_TEXT
-            )
-        );
-        
-        $settings->add(
-            new admin_setting_configtext(
-                'mod_tsbadge_connector_address',
-                get_string('connectoraddress', 'tsbadge'),
-                get_string('connectoraddress_desc', 'tsbadge'),
-                '',
-                PARAM_TEXT
-            )
-        );
+    $settings->add(
+        new admin_setting_configtext(
+            'mod_tsbadge_domain_url',
+            get_string('domainurl', 'tsbadge'),
+            get_string('domainurl_desc', 'tsbadge'),
+            '',
+            PARAM_URL // Verwende PARAM_URL, wenn du sicherstellen möchtest, dass die Eingabe eine gültige URL ist
+        )
+    );
 
-        $settings->add(
-            new admin_setting_configtext(
-                'mod_tsbadge_connector_attribute_id',
-                get_string('connectorattributeid', 'tsbadge'),
-                get_string('connectorattributeid_desc', 'tsbadge'),
-                '',
-                PARAM_TEXT
-            )
-        );
-    
+    $settings->add(
+        new admin_setting_configtext(
+            'mod_tsbadge_api_key',
+            get_string('apikey', 'tsbadge'),
+            get_string('apikey_desc', 'tsbadge'),
+            '',
+            PARAM_TEXT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'mod_tsbadge_connector_address',
+            get_string('connectoraddress', 'tsbadge'),
+            get_string('connectoraddress_desc', 'tsbadge'),
+            '',
+            PARAM_TEXT
+        )
+    );
 }
